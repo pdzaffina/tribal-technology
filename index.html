@@ -122,6 +122,8 @@ nav {
   color: var(--navy) !important;
 }
 
+.nav-hamburger { display: none; }
+
 /* ── Hero ──────────────────────────────────────────────────────────── */
 #home {
   min-height: 100vh;
@@ -853,26 +855,217 @@ footer {
 .reveal-delay-3 { transition-delay: 0.3s; }
 .reveal-delay-4 { transition-delay: 0.4s; }
 
-/* ── Mobile ─────────────────────────────────────────────────────────── */
-@media (max-width: 900px) {
-  nav { padding: 0 24px; }
-  .nav-links { gap: 20px; }
-  .nav-links li:not(:last-child):not(:nth-last-child(2)) { display: none; }
+/* ── Tablet (max 1024px) ─────────────────────────────────────────── */
+@media (max-width: 1024px) {
+  .hero-content { gap: 48px; }
+  .hero-card { min-width: 280px; }
+  .about-grid { gap: 48px; }
+  .contact-grid { gap: 48px; }
+}
 
-  section { padding: 72px 24px; }
-  #home { padding: 100px 24px 72px; }
+/* ── Mobile (max 768px) ──────────────────────────────────────────── */
+@media (max-width: 768px) {
 
-  .hero-content { grid-template-columns: 1fr; gap: 48px; }
+  /* Nav — hamburger menu */
+  nav {
+    padding: 0 20px;
+    height: 60px;
+  }
+
+  .nav-logo-text { font-size: 17px; }
+
+  .nav-links {
+    display: none;
+    position: fixed;
+    top: 60px; left: 0; right: 0;
+    background: rgba(11,22,40,0.99);
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0;
+    padding: 8px 0 16px;
+    border-bottom: 1px solid rgba(176,125,58,0.2);
+    z-index: 99;
+  }
+
+  .nav-links.open { display: flex; }
+
+  .nav-links li { width: 100%; }
+
+  .nav-links a {
+    display: block;
+    padding: 14px 24px;
+    font-size: 13px;
+    letter-spacing: 1.5px;
+    border-bottom: 1px solid rgba(176,125,58,0.08);
+  }
+
+  .nav-links li:last-child a {
+    margin: 12px 20px 0;
+    border: 1px solid var(--bronze);
+    border-radius: 2px;
+    text-align: center;
+    padding: 12px 20px;
+  }
+
+  .nav-hamburger {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 5px;
+    width: 36px;
+    height: 36px;
+    cursor: pointer;
+    background: none;
+    border: none;
+    padding: 4px;
+  }
+
+  .nav-hamburger span {
+    display: block;
+    height: 1.5px;
+    background: var(--cream);
+    border-radius: 1px;
+    transition: all 0.25s;
+  }
+
+  .nav-hamburger.open span:nth-child(1) { transform: translateY(6.5px) rotate(45deg); }
+  .nav-hamburger.open span:nth-child(2) { opacity: 0; }
+  .nav-hamburger.open span:nth-child(3) { transform: translateY(-6.5px) rotate(-45deg); }
+
+  /* Sections */
+  section { padding: 64px 20px; }
+  #home { padding: 90px 20px 64px; min-height: auto; }
+
+  /* Hero */
+  .hero-content {
+    grid-template-columns: 1fr;
+    gap: 0;
+  }
+
   .hero-card { display: none; }
-  .services-grid { grid-template-columns: 1fr; }
-  .service-card.featured { grid-column: span 1; grid-template-columns: 1fr; }
+
+  h1 { font-size: 38px; margin-bottom: 20px; }
+
+  .hero-body {
+    font-size: 15px;
+    margin-bottom: 32px;
+  }
+
+  .hero-actions {
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .btn-primary, .btn-secondary {
+    width: 100%;
+    justify-content: center;
+    padding: 14px 24px;
+  }
+
+  .hero-scroll { display: none; }
+
+  /* Section headers */
+  h2 { font-size: 32px; }
+  .section-intro { font-size: 15px; }
+  .section-header { margin-bottom: 40px; }
+
+  /* Services */
+  .services-grid {
+    grid-template-columns: 1fr;
+    gap: 2px;
+  }
+
+  .service-card { padding: 32px 28px; }
+
+  .service-card.featured {
+    grid-column: span 1;
+    grid-template-columns: 1fr;
+    gap: 24px;
+  }
+
   .featured-visual { display: none; }
-  .about-grid { grid-template-columns: 1fr; gap: 48px; }
-  .contact-grid { grid-template-columns: 1fr; gap: 48px; }
-  .form-row { grid-template-columns: 1fr; }
-  .assessment-strip { flex-direction: column; text-align: center; }
-  footer { padding: 32px 24px; }
-  .footer-inner { flex-direction: column; text-align: center; }
+
+  h3 { font-size: 22px; }
+  .service-body { font-size: 14px; }
+
+  /* About */
+  .about-grid {
+    grid-template-columns: 1fr;
+    gap: 40px;
+  }
+
+  .about-body { font-size: 15px; }
+
+  .about-quote {
+    padding: 20px 24px;
+    margin: 28px 0;
+  }
+
+  .about-quote-text { font-size: 18px; }
+
+  .principle-item { padding: 20px 0; gap: 16px; }
+  .principle-num { font-size: 28px; width: 36px; }
+  .principle-title { font-size: 17px; }
+  .principle-body { font-size: 13px; }
+
+  .assessment-strip {
+    flex-direction: column;
+    text-align: center;
+    padding: 28px 24px;
+    gap: 20px;
+  }
+
+  .assessment-strip .btn-primary {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .strip-title { font-size: 22px; }
+
+  /* Contact */
+  .contact-grid {
+    grid-template-columns: 1fr;
+    gap: 40px;
+  }
+
+  .form-row { grid-template-columns: 1fr; gap: 16px; }
+
+  .contact-form .btn-primary {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .cd-icon { width: 36px; height: 36px; font-size: 16px; }
+  .cd-value { font-size: 13px; }
+
+  /* Footer */
+  footer { padding: 28px 20px; }
+
+  .footer-inner {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 16px;
+  }
+
+  .footer-links {
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 16px;
+  }
+
+  .footer-center { font-size: 11px; }
+}
+
+/* ── Small mobile (max 400px) ────────────────────────────────────── */
+@media (max-width: 400px) {
+  nav { padding: 0 16px; }
+  section { padding: 56px 16px; }
+  #home { padding: 80px 16px 56px; }
+  h1 { font-size: 32px; }
+  h2 { font-size: 28px; }
+  .service-card { padding: 28px 20px; }
+  .service-tags span { font-size: 9px; padding: 3px 8px; }
 }
 </style>
 </head>
@@ -888,12 +1081,15 @@ footer {
     </svg>
     <span class="nav-logo-text">Tribal<span>Technology</span></span>
   </a>
-  <ul class="nav-links">
+  <ul class="nav-links" id="nav-links">
     <li><a href="#services">Services</a></li>
     <li><a href="#about">About</a></li>
     <li><a href="#contact">Contact</a></li>
     <li><a href="https://ai-assessment.tribal-technology.com" class="nav-cta">AI Assessment</a></li>
   </ul>
+  <button class="nav-hamburger" id="hamburger" aria-label="Toggle menu">
+    <span></span><span></span><span></span>
+  </button>
 </nav>
 
 <!-- ── Hero ────────────────────────────────────────────────────────── -->
@@ -1004,7 +1200,7 @@ footer {
           <div class="service-num">03</div>
           <span class="service-icon">⬡</span>
           <h3>Data Architecture &amp;<br>Tribal Data Repatriation</h3>
-          <p class="service-body">Your nation's data tells your story — and it belongs to you. We design data systems rooted in CARE principles and help nations identify, locate, and reclaim data held by federal agencies, state governments, and third-party vendors. From enrollment systems to health records, we connect tribes with their data.</p>
+          <p class="service-body">Your nation's data tells your story — and it belongs to you. We design data systems rooted in OCAP® principles and help nations identify, locate, and reclaim data held by federal agencies, state governments, and third-party vendors. From enrollment systems to health records, we connect tribes with their data.</p>
           <div class="service-tags">
             <span>OCAP® Implementation</span>
             <span>Data Sovereignty Policy</span>
@@ -1253,6 +1449,23 @@ footer {
 </footer>
 
 <script>
+// Hamburger menu
+const hamburger = document.getElementById('hamburger');
+const navLinks  = document.getElementById('nav-links');
+
+hamburger.addEventListener('click', () => {
+  hamburger.classList.toggle('open');
+  navLinks.classList.toggle('open');
+});
+
+// Close menu when a link is clicked
+navLinks.querySelectorAll('a').forEach(link => {
+  link.addEventListener('click', () => {
+    hamburger.classList.remove('open');
+    navLinks.classList.remove('open');
+  });
+});
+
 // Scroll reveal
 const observer = new IntersectionObserver((entries) => {
   entries.forEach(entry => {
