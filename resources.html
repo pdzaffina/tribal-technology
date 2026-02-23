@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Resources — Tribal Technology</title>
+<meta name="description" content="Free tools and templates for tribal governments navigating technology procurement, AI governance, and data sovereignty.">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,400;1,600&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+
+:root {
+  --navy:      #0B1628;
+  --navy-mid:  #142240;
+  --bronze:    #B07D3A;
+  --bronze-lt: #D4A055;
+  --cream:     #F8F4EE;
+  --warm-wh:   #FDFBF8;
+  --stone:     #8C8278;
+  --stone-lt:  #C4BDB4;
+  --ink:       #1A1410;
+  --rule:      rgba(176,125,58,0.20);
+  --rule-lt:   rgba(176,125,58,0.10);
+  --ff-d: 'Cormorant Garamond', Georgia, serif;
+  --ff-b: 'DM Sans', system-ui, sans-serif;
+  --ease: cubic-bezier(0.25,0.46,0.45,0.94);
+}
+
+body { font-family: var(--ff-b); font-size: 16px; line-height: 1.6; color: var(--ink); background: var(--warm-wh); overflow-x: hidden; }
+a { text-decoration: none; }
+button { cursor: pointer; font-family: var(--ff-b); }
+
+/* ── Nav ── */
+nav {
+  position: sticky; top: 0; z-index: 200;
+  background: #0B1628;
+  border-bottom: 1px solid rgba(176,125,58,0.15);
+}
+.nav-top {
+  height: 60px; display: flex; align-items: center;
+  justify-content: space-between; padding: 0 20px;
+}
+.logo { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
+.logo svg { width: 28px; height: 28px; }
+.logo-text { font-family: var(--ff-d); font-size: 18px; font-weight: 600; color: var(--cream); white-space: nowrap; }
+.logo-text span { color: var(--bronze-lt); }
+
+.hamburger { display: flex; flex-direction: column; justify-content: center; gap: 5px; width: 40px; height: 40px; background: none; border: none; padding: 6px; flex-shrink: 0; }
+.hamburger span { display: block; height: 2px; background: var(--cream); border-radius: 1px; transition: transform 0.25s, opacity 0.25s; transform-origin: center; }
+.hamburger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+.hamburger.open span:nth-child(2) { opacity: 0; transform: scaleX(0); }
+.hamburger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+.nav-drawer { display: none; background: #0d1e35; border-top: 1px solid rgba(176,125,58,0.15); }
+.nav-drawer.open { display: block; }
+.nav-drawer a { display: block; padding: 16px 20px; font-size: 15px; font-weight: 500; color: #F8F4EE; border-bottom: 1px solid rgba(255,255,255,0.07); transition: background 0.15s; }
+.nav-drawer a:last-child { border-bottom: none; }
+.nav-drawer a:hover { background: rgba(176,125,58,0.1); }
+.nav-drawer .drawer-cta { color: var(--bronze-lt); font-weight: 600; }
+
+.nav-links { display: none; align-items: center; gap: 32px; list-style: none; }
+.nav-links a { font-size: 11px; font-weight: 500; letter-spacing: 1.8px; text-transform: uppercase; color: var(--stone-lt); transition: color 0.2s; }
+.nav-links a:hover, .nav-links a.active { color: var(--bronze-lt); }
+.nav-links .nav-cta { padding: 8px 20px; border: 1px solid var(--bronze); border-radius: 2px; color: var(--bronze-lt); transition: background 0.2s, color 0.2s; }
+.nav-links .nav-cta:hover { background: var(--bronze); color: var(--navy); }
+
+/* ── Page hero ── */
+.page-hero {
+  background: var(--navy);
+  padding: 52px 20px 48px;
+  position: relative;
+  overflow: hidden;
+}
+.page-hero-bg { position: absolute; inset: 0; pointer-events: none; opacity: 0.5; }
+.page-hero-inner { max-width: 1200px; margin: 0 auto; position: relative; z-index: 2; }
+.back-link {
+  display: inline-flex; align-items: center; gap: 7px;
+  font-size: 11px; letter-spacing: 1.5px; text-transform: uppercase;
+  color: var(--stone-lt); margin-bottom: 20px; transition: color 0.2s;
+}
+.back-link:hover { color: var(--bronze-lt); }
+.back-link svg { width: 14px; height: 14px; }
+
+.eyebrow { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
+.eyebrow-line { width: 28px; height: 1px; background: var(--bronze); flex-shrink: 0; }
+.eyebrow-text { font-size: 10px; letter-spacing: 2.5px; text-transform: uppercase; color: var(--bronze); font-weight: 500; }
+
+h1 { font-family: var(--ff-d); font-size: 38px; font-weight: 600; line-height: 1.1; color: var(--cream); margin-bottom: 14px; }
+h1 em { font-style: italic; color: var(--bronze-lt); }
+.hero-sub { font-size: 15px; color: var(--stone-lt); line-height: 1.7; font-weight: 300; max-width: 560px; }
+
+/* ── Main content ── */
+.pad { padding: 56px 20px; }
+.inner { max-width: 1200px; margin: 0 auto; }
+
+/* ── Resource cards ── */
+.resources-list { display: flex; flex-direction: column; gap: 2px; background: var(--rule); }
+
+.resource-card {
+  background: var(--warm-wh);
+  padding: 32px 24px;
+  position: relative;
+}
+.resource-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0;
+  width: 3px; height: 100%;
+  background: transparent;
+  transition: background 0.25s;
+}
+.resource-card:hover::before { background: var(--bronze); }
+
+.rc-meta { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; flex-wrap: wrap; }
+.rc-type {
+  font-size: 9px; letter-spacing: 2px; text-transform: uppercase;
+  color: var(--bronze); font-weight: 600;
+  background: rgba(176,125,58,0.1);
+  padding: 3px 10px; border-radius: 2px;
+}
+.rc-tag {
+  font-size: 9px; letter-spacing: 1px; text-transform: uppercase;
+  color: var(--stone); border: 1px solid var(--rule);
+  padding: 3px 8px; border-radius: 2px;
+}
+.rc-new {
+  font-size: 9px; letter-spacing: 1px; text-transform: uppercase;
+  color: var(--navy); background: var(--bronze-lt);
+  padding: 3px 8px; border-radius: 2px; font-weight: 600;
+}
+
+h2 { font-family: var(--ff-d); font-size: 26px; font-weight: 600; line-height: 1.15; color: var(--navy); margin-bottom: 10px; }
+.rc-body { font-size: 14px; color: var(--stone); line-height: 1.75; font-weight: 300; margin-bottom: 20px; max-width: 680px; }
+.rc-body strong { color: var(--ink); font-weight: 500; }
+
+/* What's inside list */
+.rc-contents { margin-bottom: 22px; }
+.rc-contents-label {
+  font-size: 9px; letter-spacing: 1.5px; text-transform: uppercase;
+  color: var(--stone); margin-bottom: 8px; font-weight: 600;
+}
+.rc-contents ul { list-style: none; display: flex; flex-direction: column; gap: 4px; }
+.rc-contents li {
+  font-size: 13px; color: var(--ink); font-weight: 300;
+  padding-left: 16px; position: relative; line-height: 1.5;
+}
+.rc-contents li::before { content: '—'; position: absolute; left: 0; color: var(--bronze); font-size: 11px; top: 1px; }
+
+.rc-actions { display: flex; flex-direction: column; gap: 10px; }
+
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  padding: 13px 24px; font-family: var(--ff-b); font-size: 11px; font-weight: 600;
+  letter-spacing: 1.4px; text-transform: uppercase; border-radius: 2px; border: none;
+  transition: background 0.2s, color 0.2s, transform 0.15s; cursor: pointer; white-space: nowrap;
+}
+.btn-bronze { background: var(--bronze); color: var(--navy); }
+.btn-bronze:hover { background: var(--bronze-lt); transform: translateY(-1px); }
+.btn-outline { background: transparent; color: var(--navy); border: 1px solid var(--rule); }
+.btn-outline:hover { border-color: var(--bronze); color: var(--bronze); }
+.btn-full { width: 100%; }
+.btn svg { width: 14px; height: 14px; flex-shrink: 0; }
+
+/* Coming soon card */
+.resource-card.coming-soon { background: var(--cream); opacity: 0.7; }
+.resource-card.coming-soon h2 { color: var(--stone); }
+.coming-badge {
+  font-size: 9px; letter-spacing: 1.5px; text-transform: uppercase;
+  color: var(--stone); border: 1px solid var(--stone-lt);
+  padding: 3px 8px; border-radius: 2px;
+}
+
+/* ── Sidebar strip ── */
+.page-layout { display: flex; flex-direction: column; gap: 40px; }
+.sidebar { display: flex; flex-direction: column; gap: 16px; }
+
+.sidebar-card {
+  background: var(--navy);
+  border: 1px solid rgba(176,125,58,0.2);
+  border-radius: 3px;
+  padding: 24px 20px;
+  position: relative;
+  overflow: hidden;
+}
+.sidebar-card::before {
+  content: ''; position: absolute;
+  top: 0; left: 0; width: 100%; height: 2px;
+  background: linear-gradient(90deg, var(--bronze), transparent);
+}
+.sc-label { font-size: 9px; letter-spacing: 2px; text-transform: uppercase; color: var(--bronze); margin-bottom: 8px; }
+.sc-title { font-family: var(--ff-d); font-size: 20px; font-weight: 600; color: var(--cream); margin-bottom: 6px; line-height: 1.2; }
+.sc-body { font-size: 13px; color: var(--stone-lt); font-weight: 300; line-height: 1.6; margin-bottom: 16px; }
+
+/* ── Footer ── */
+footer { background: var(--navy-mid); border-top: 1px solid rgba(176,125,58,0.12); padding: 28px 20px; }
+.footer-inner { max-width: 1200px; margin: 0 auto; display: flex; flex-direction: column; align-items: center; gap: 14px; text-align: center; }
+.footer-logo { font-family: var(--ff-d); font-size: 18px; font-weight: 600; color: var(--cream); }
+.footer-logo span { color: var(--bronze-lt); }
+.footer-copy { font-size: 11px; color: var(--stone); line-height: 1.7; }
+.footer-links { display: flex; flex-wrap: wrap; justify-content: center; gap: 14px; }
+.footer-links a { font-size: 10px; letter-spacing: 1px; text-transform: uppercase; color: var(--stone); transition: color 0.2s; }
+.footer-links a:hover { color: var(--bronze-lt); }
+
+/* ── Reveal ── */
+.reveal { opacity: 0; transform: translateY(16px); transition: opacity 0.55s var(--ease), transform 0.55s var(--ease); }
+.reveal.in { opacity: 1; transform: none; }
+.d1 { transition-delay: 0.1s; }
+.d2 { transition-delay: 0.2s; }
+
+/* ════════════════ DESKTOP ≥ 768px ════════════════ */
+@media (min-width: 768px) {
+  .nav-top { padding: 0 40px; height: 66px; }
+  .hamburger { display: none; }
+  .nav-links { display: flex; }
+
+  .page-hero { padding: 64px 40px 56px; }
+  h1 { font-size: 52px; }
+  .pad { padding: 72px 40px; }
+
+  .page-layout { flex-direction: row; align-items: flex-start; gap: 48px; }
+  .resources-col { flex: 1; min-width: 0; }
+  .sidebar { width: 280px; flex-shrink: 0; position: sticky; top: 90px; }
+
+  .rc-actions { flex-direction: row; }
+  .rc-actions .btn { width: auto; }
+
+  .footer-inner { flex-direction: row; justify-content: space-between; text-align: left; align-items: center; }
+  .footer-copy { text-align: center; }
+}
+
+@media (min-width: 1024px) {
+  .nav-top { padding: 0 56px; }
+  .page-hero { padding: 72px 56px 60px; }
+  .pad { padding: 80px 56px; }
+  h1 { font-size: 58px; }
+  .sidebar { width: 300px; }
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-top">
+    <a href="index.html" class="logo">
+      <svg viewBox="0 0 28 28" fill="none">
+        <polygon points="14,2 26,8 26,20 14,26 2,20 2,8" stroke="#B07D3A" stroke-width="1.5" fill="none"/>
+        <polygon points="14,6 22,10.5 22,17.5 14,22 6,17.5 6,10.5" stroke="#B07D3A" stroke-width="0.7" fill="rgba(176,125,58,0.07)"/>
+        <circle cx="14" cy="14" r="2.5" fill="#B07D3A" opacity="0.65"/>
+      </svg>
+      <span class="logo-text">Tribal<span>Technology</span></span>
+    </a>
+    <ul class="nav-links">
+      <li><a href="index.html#services">Services</a></li>
+      <li><a href="index.html#about">About</a></li>
+      <li><a href="resources.html" class="active">Resources</a></li>
+      <li><a href="index.html#contact">Contact</a></li>
+      <li><a href="https://ai-assessment.tribal-technology.com" class="nav-cta">AI Assessment</a></li>
+    </ul>
+    <button class="hamburger" id="hamburger" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+  <div class="nav-drawer" id="nav-drawer">
+    <a href="index.html#services">Services</a>
+    <a href="index.html#about">About</a>
+    <a href="resources.html">Resources</a>
+    <a href="index.html#contact">Contact</a>
+    <a href="https://ai-assessment.tribal-technology.com" class="drawer-cta">AI Assessment</a>
+  </div>
+</nav>
+
+<!-- PAGE HERO -->
+<div class="page-hero">
+  <svg class="page-hero-bg" viewBox="0 0 1200 300" preserveAspectRatio="xMidYMid slice">
+    <defs>
+      <pattern id="hg" x="0" y="0" width="70" height="80" patternUnits="userSpaceOnUse">
+        <polygon points="35,4 66,20 66,60 35,76 4,60 4,20" fill="none" stroke="rgba(176,125,58,0.09)" stroke-width="1"/>
+      </pattern>
+    </defs>
+    <rect width="100%" height="100%" fill="url(#hg)"/>
+  </svg>
+  <div class="page-hero-inner">
+    <a href="index.html" class="back-link">
+      <svg viewBox="0 0 14 14" fill="none"><path d="M9 2L4 7L9 12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+      Back to main site
+    </a>
+    <div class="eyebrow"><div class="eyebrow-line"></div><span class="eyebrow-text">Free Resources</span></div>
+    <h1>Tools for <em>sovereign</em><br>technology decisions</h1>
+    <p class="hero-sub">Practical templates, frameworks, and guides — built for tribal governments, free to use and adapt.</p>
+  </div>
+</div>
+
+<!-- MAIN CONTENT -->
+<div class="pad">
+  <div class="inner">
+    <div class="page-layout">
+
+      <!-- Resources list -->
+      <div class="resources-col">
+        <div class="resources-list">
+
+          <!-- ── Resource 1: RFP Addendum ── -->
+          <div class="resource-card reveal">
+            <div class="rc-meta">
+              <span class="rc-new">New</span>
+              <span class="rc-type">Template · PDF</span>
+              <span class="rc-tag">Procurement</span>
+              <span class="rc-tag">AI Governance</span>
+              <span class="rc-tag">Data Sovereignty</span>
+            </div>
+            <h2>RFP Addendum: Data &amp; AI Protection Requirements</h2>
+            <p class="rc-body">
+              When a tribal nation issues an RFP for software, platforms, or AI-enabled services, most standard templates don't ask the right questions about data ownership, AI transparency, or sovereign authority. <strong>This addendum fills that gap.</strong>
+            </p>
+            <p class="rc-body">
+              Attach it to any technology RFP and require vendors to respond in writing. Weak or vague answers are themselves a signal. The questions cover five protection domains and include red-flag answer guides so your procurement team knows what to watch for.
+            </p>
+
+            <div class="rc-contents">
+              <div class="rc-contents-label">What's inside</div>
+              <ul>
+                <li>Section 1 — Data Ownership &amp; Control (4 questions)</li>
+                <li>Section 2 — AI &amp; Automated Decision-Making (5 questions)</li>
+                <li>Section 3 — Data Sharing &amp; Third Parties (3 questions)</li>
+                <li>Section 4 — Security &amp; Breach Response (3 questions)</li>
+                <li>Section 5 — Sovereignty &amp; Jurisdiction (3 questions)</li>
+                <li>Red-flag answer guide for each question</li>
+                <li>Instructions for incorporating responses into the final contract</li>
+              </ul>
+            </div>
+
+            <div class="rc-actions">
+              <a href="pdfs/rfp-addendum.pdf" download class="btn btn-bronze">
+                <svg viewBox="0 0 14 14" fill="none"><path d="M7 2v7M4 6l3 3 3-3M2 11h10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+                Download PDF
+              </a>
+              <a href="index.html#contact" class="btn btn-outline">Ask a Question</a>
+            </div>
+          </div>
+
+          <!-- ── Resource 2: AI Briefing ── -->
+          <div class="resource-card reveal d1">
+            <div class="rc-meta">
+              <span class="rc-type">Briefing · PDF</span>
+              <span class="rc-tag">AI Governance</span>
+              <span class="rc-tag">Leadership</span>
+            </div>
+            <h2>AI Readiness Executive Briefing</h2>
+            <p class="rc-body">
+              A two-page briefing designed for Tribal Council and leadership — no technical background required. Covers the five readiness domains, a priority action matrix, and guiding principles for sovereign AI adoption.
+            </p>
+            <p class="rc-body">
+              Use it to start the conversation with leadership before any AI procurement decision is made.
+            </p>
+            <div class="rc-contents">
+              <div class="rc-contents-label">What's inside</div>
+              <ul>
+                <li>Five AI readiness domains with score placeholders</li>
+                <li>Priority action matrix — Critical, High, and Medium items</li>
+                <li>Six sovereign guiding principles</li>
+                <li>Key finding: policy before procurement</li>
+              </ul>
+            </div>
+            <div class="rc-actions">
+              <a href="pdfs/tribal-ai-briefing.pdf" download class="btn btn-bronze">
+                <svg viewBox="0 0 14 14" fill="none"><path d="M7 2v7M4 6l3 3 3-3M2 11h10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+                Download PDF
+              </a>
+              <a href="https://ai-assessment.tribal-technology.com" class="btn btn-outline">Take the Assessment</a>
+            </div>
+          </div>
+
+          <!-- ── Resource 3: Coming soon ── -->
+          <div class="resource-card coming-soon reveal d2">
+            <div class="rc-meta">
+              <span class="coming-badge">Coming Soon</span>
+              <span class="rc-tag">Vendor Evaluation</span>
+              <span class="rc-tag">AI Governance</span>
+            </div>
+            <h2>Tribal AI Vendor Scorecard</h2>
+            <p class="rc-body">A structured scoring template for evaluating AI vendor proposals side-by-side across sovereignty, security, transparency, and support dimensions.</p>
+          </div>
+
+          <div class="resource-card coming-soon reveal d2">
+            <div class="rc-meta">
+              <span class="coming-badge">Coming Soon</span>
+              <span class="rc-tag">Policy</span>
+              <span class="rc-tag">Data Governance</span>
+            </div>
+            <h2>Tribal Data Sovereignty Policy Template</h2>
+            <p class="rc-body">A model Tribal Data Sovereignty ordinance — editable, annotated, and grounded in CARE Principles and OCAP® — for nations building or updating their data governance framework.</p>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Sidebar -->
+      <div class="sidebar">
+
+        <div class="sidebar-card reveal">
+          <div class="sc-label">Free Tool</div>
+          <div class="sc-title">AI Readiness Assessment</div>
+          <p class="sc-body">Score your nation across five sovereign dimensions — Data Governance, Sovereignty, Vendor Risk, Community Impact, and Workforce — in under 10 minutes.</p>
+          <a href="https://ai-assessment.tribal-technology.com" class="btn btn-bronze btn-full">Start Assessment</a>
+        </div>
+
+        <div class="sidebar-card reveal d1">
+          <div class="sc-label">Have a Question?</div>
+          <div class="sc-title">Talk to a Practice Lead</div>
+          <p class="sc-body">Not sure which resource fits your situation, or need help applying one? Reach out — we respond within two business days.</p>
+          <a href="index.html#contact" class="btn btn-outline btn-full" style="color:var(--stone-lt);border-color:rgba(176,125,58,0.3);">Get In Touch</a>
+        </div>
+
+        <div class="sidebar-card reveal d2" style="background: rgba(255,255,255,0.02); border-color: rgba(176,125,58,0.12);">
+          <div class="sc-label">Usage Rights</div>
+          <p style="font-size:12px;color:var(--stone-lt);line-height:1.65;font-weight:300;">
+            All resources on this page are provided free of charge. You may reproduce, adapt, and distribute them for use within your nation or organization. Attribution to Tribal Technology is appreciated but not required.
+          </p>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-inner">
+    <div class="footer-logo">Tribal<span>Technology</span></div>
+    <div class="footer-copy">
+      © 2026 Tribal Technology · tribal-technology.com<br>
+      <span style="font-size:10px;opacity:0.6;">Grounded in CARE Principles · OCAP® · UNDRIP</span>
+    </div>
+    <div class="footer-links">
+      <a href="index.html#services">Services</a>
+      <a href="index.html#about">About</a>
+      <a href="resources.html">Resources</a>
+      <a href="https://ai-assessment.tribal-technology.com">Assessment</a>
+      <a href="index.html#contact">Contact</a>
+    </div>
+  </div>
+</footer>
+
+<script>
+// Hamburger
+const burger = document.getElementById('hamburger');
+const drawer = document.getElementById('nav-drawer');
+burger.addEventListener('click', () => { burger.classList.toggle('open'); drawer.classList.toggle('open'); });
+drawer.querySelectorAll('a').forEach(a => a.addEventListener('click', () => { burger.classList.remove('open'); drawer.classList.remove('open'); }));
+
+// Scroll reveal
+const obs = new IntersectionObserver(entries => {
+  entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('in'); obs.unobserve(e.target); } });
+}, { threshold: 0.08, rootMargin: '0px 0px -24px 0px' });
+document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
+</script>
+</body>
+</html>
