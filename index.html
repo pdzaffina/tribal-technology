@@ -42,17 +42,19 @@ button { cursor: pointer; font-family: var(--ff-b); }
 
 /* ── Nav ── */
 nav {
-  position: fixed;
+  position: sticky;
   top: 0; left: 0; right: 0;
   z-index: 200;
+  background: #0B1628;
+  border-bottom: 1px solid rgba(176,125,58,0.15);
+}
+
+.nav-top {
   height: 60px;
   display: flex;
   align-items: center;
   justify-content: space-between;
   padding: 0 20px;
-  background: rgba(11,22,40,0.97);
-  backdrop-filter: blur(10px);
-  border-bottom: 1px solid rgba(176,125,58,0.15);
 }
 .logo { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
 .logo svg { width: 28px; height: 28px; }
@@ -72,20 +74,24 @@ nav {
 .hamburger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
 
 .nav-drawer {
-  display: none; position: fixed;
-  top: 60px; left: 0; right: 0;
-  background: rgba(11,22,40,0.99);
-  border-bottom: 1px solid rgba(176,125,58,0.2);
-  z-index: 199; flex-direction: column; padding: 8px 0 20px;
+  display: none;
+  background: #0d1e35;
+  border-top: 1px solid rgba(176,125,58,0.15);
 }
-.nav-drawer.open { display: flex; }
+.nav-drawer.open { display: block; }
 .nav-drawer a {
-  display: block; padding: 15px 24px;
-  font-size: 13px; font-weight: 500; letter-spacing: 1.5px; text-transform: uppercase;
-  color: var(--stone-lt); border-bottom: 1px solid rgba(176,125,58,0.08); transition: color 0.2s, background 0.2s;
+  display: block;
+  padding: 16px 20px;
+  font-size: 15px;
+  font-weight: 500;
+  color: #F8F4EE;
+  border-bottom: 1px solid rgba(255,255,255,0.07);
+  background: transparent;
+  transition: background 0.15s;
 }
-.nav-drawer a:hover { color: var(--bronze-lt); background: rgba(176,125,58,0.05); }
-.nav-drawer .drawer-cta { margin: 16px 20px 0; border: 1px solid var(--bronze); border-radius: 2px; text-align: center; color: var(--bronze-lt); border-bottom: 1px solid var(--bronze); }
+.nav-drawer a:last-child { border-bottom: none; }
+.nav-drawer a:hover { background: rgba(176,125,58,0.1); }
+.nav-drawer .drawer-cta { color: var(--bronze-lt); font-weight: 600; }
 
 .nav-links { display: none; align-items: center; gap: 32px; list-style: none; }
 .nav-links a { font-size: 11px; font-weight: 500; letter-spacing: 1.8px; text-transform: uppercase; color: var(--stone-lt); transition: color 0.2s; }
@@ -119,8 +125,8 @@ h2 em { font-style: italic; color: var(--bronze); }
 
 /* ── Hero ── */
 #home {
-  background: var(--navy); padding: 90px 20px 60px;
-  position: relative; overflow: hidden; min-height: 100svh;
+  background: var(--navy); padding: 60px 20px 60px;
+  position: relative; overflow: hidden; min-height: 90svh;
   display: flex; align-items: center;
 }
 .hero-bg { position: absolute; inset: 0; pointer-events: none; opacity: 0.6; }
@@ -253,12 +259,13 @@ footer { background: var(--navy-mid); border-top: 1px solid rgba(176,125,58,0.12
    DESKTOP ≥ 768px
 ════════════════════════════ */
 @media (min-width: 768px) {
-  nav { padding: 0 40px; height: 66px; }
+  nav { border-bottom: 1px solid rgba(176,125,58,0.15); }
+  .nav-top { padding: 0 40px; height: 66px; }
   .hamburger { display: none; }
   .nav-links { display: flex; }
 
   .pad { padding: 96px 40px; }
-  #home { padding: 120px 40px 80px; }
+  #home { padding: 80px 40px 80px; }
 
   h1 { font-size: 58px; }
   h2 { font-size: 44px; }
@@ -299,9 +306,9 @@ footer { background: var(--navy-mid); border-top: 1px solid rgba(176,125,58,0.12
 }
 
 @media (min-width: 1024px) {
-  nav { padding: 0 56px; }
+  .nav-top { padding: 0 56px; }
   .pad { padding: 100px 56px; }
-  #home { padding: 130px 56px 90px; }
+  #home { padding: 80px 56px 90px; }
   h1 { font-size: 68px; }
   h2 { font-size: 50px; }
 }
@@ -311,30 +318,31 @@ footer { background: var(--navy-mid); border-top: 1px solid rgba(176,125,58,0.12
 
 <!-- NAV -->
 <nav>
-  <a href="#home" class="logo">
-    <svg viewBox="0 0 28 28" fill="none">
-      <polygon points="14,2 26,8 26,20 14,26 2,20 2,8" stroke="#B07D3A" stroke-width="1.5" fill="none"/>
-      <polygon points="14,6 22,10.5 22,17.5 14,22 6,17.5 6,10.5" stroke="#B07D3A" stroke-width="0.7" fill="rgba(176,125,58,0.07)"/>
-      <circle cx="14" cy="14" r="2.5" fill="#B07D3A" opacity="0.65"/>
-    </svg>
-    <span class="logo-text">Tribal<span>Technology</span></span>
-  </a>
-  <ul class="nav-links">
-    <li><a href="#services">Services</a></li>
-    <li><a href="#about">About</a></li>
-    <li><a href="#contact">Contact</a></li>
-    <li><a href="https://ai-assessment.tribal-technology.com" class="nav-cta">AI Assessment</a></li>
-  </ul>
-  <button class="hamburger" id="hamburger" aria-label="Menu">
-    <span></span><span></span><span></span>
-  </button>
-</nav>
-
-<nav class="nav-drawer" id="nav-drawer">
-  <a href="#services">Services</a>
-  <a href="#about">About</a>
-  <a href="#contact">Contact</a>
-  <a href="https://ai-assessment.tribal-technology.com" class="drawer-cta">AI Assessment →</a>
+  <div class="nav-top">
+    <a href="#home" class="logo">
+      <svg viewBox="0 0 28 28" fill="none">
+        <polygon points="14,2 26,8 26,20 14,26 2,20 2,8" stroke="#B07D3A" stroke-width="1.5" fill="none"/>
+        <polygon points="14,6 22,10.5 22,17.5 14,22 6,17.5 6,10.5" stroke="#B07D3A" stroke-width="0.7" fill="rgba(176,125,58,0.07)"/>
+        <circle cx="14" cy="14" r="2.5" fill="#B07D3A" opacity="0.65"/>
+      </svg>
+      <span class="logo-text">Tribal<span>Technology</span></span>
+    </a>
+    <ul class="nav-links">
+      <li><a href="#services">Services</a></li>
+      <li><a href="#about">About</a></li>
+      <li><a href="#contact">Contact</a></li>
+      <li><a href="https://ai-assessment.tribal-technology.com" class="nav-cta">AI Assessment</a></li>
+    </ul>
+    <button class="hamburger" id="hamburger" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+  <div class="nav-drawer" id="nav-drawer">
+    <a href="#services">Services</a>
+    <a href="#about">About</a>
+    <a href="#contact">Contact</a>
+    <a href="https://ai-assessment.tribal-technology.com" class="drawer-cta">AI Assessment</a>
+  </div>
 </nav>
 
 <!-- HOME -->
