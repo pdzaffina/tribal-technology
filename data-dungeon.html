@@ -1,0 +1,1763 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DATA DUNGEON</title>
+<link href="https://fonts.googleapis.com/css2?family=VT323&family=Share+Tech+Mono&family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0a0a0f;
+  --bg2: #0f0f1a;
+  --panel: #12121e;
+  --border: #1e2a4a;
+  --glow: #00d4ff;
+  --glow2: #ff6b35;
+  --glow3: #7fff00;
+  --red: #ff3355;
+  --gold: #ffd700;
+  --purple: #a855f7;
+  --text: #c8d8e8;
+  --dim: #4a5a6a;
+  --green: #39ff14;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Share Tech Mono', monospace;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  overflow-x: hidden;
+  background-image: 
+    repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,212,255,0.015) 2px, rgba(0,212,255,0.015) 4px),
+    repeating-linear-gradient(90deg, transparent, transparent 2px, rgba(0,212,255,0.01) 2px, rgba(0,212,255,0.01) 4px);
+}
+
+/* ── TITLE SCREEN ── */
+#title-screen {
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  min-height: 100vh; width: 100%; padding: 2rem; text-align: center;
+}
+
+.title-ascii {
+  font-family: 'VT323', monospace;
+  font-size: clamp(3rem, 10vw, 7rem);
+  color: var(--glow);
+  text-shadow: 0 0 20px var(--glow), 0 0 60px rgba(0,212,255,0.3);
+  letter-spacing: 0.1em;
+  animation: flicker 4s infinite;
+  line-height: 1;
+}
+.title-sub {
+  font-family: 'VT323', monospace;
+  font-size: clamp(1.2rem, 4vw, 2rem);
+  color: var(--glow2);
+  text-shadow: 0 0 10px var(--glow2);
+  margin-top: 0.5rem;
+  letter-spacing: 0.3em;
+}
+.title-tagline {
+  color: var(--dim);
+  font-size: 0.85rem;
+  margin-top: 1rem;
+  letter-spacing: 0.15em;
+}
+
+.class-select {
+  display: flex; gap: 1.5rem; margin: 2.5rem 0; flex-wrap: wrap; justify-content: center;
+}
+.class-card {
+  border: 2px solid var(--border);
+  background: var(--panel);
+  padding: 1.5rem;
+  cursor: pointer;
+  width: 180px;
+  transition: all 0.2s;
+  position: relative;
+  clip-path: polygon(0 0, calc(100% - 12px) 0, 100% 12px, 100% 100%, 12px 100%, 0 calc(100% - 12px));
+}
+.class-card:hover, .class-card.selected {
+  border-color: var(--glow);
+  box-shadow: 0 0 20px rgba(0,212,255,0.3), inset 0 0 20px rgba(0,212,255,0.05);
+  transform: translateY(-3px);
+}
+.class-card .icon { font-size: 2.5rem; margin-bottom: 0.5rem; }
+.class-card .name { font-family: 'Orbitron', sans-serif; font-size: 0.75rem; color: var(--glow); font-weight: 700; margin-bottom: 0.4rem; }
+.class-card .desc { font-size: 0.7rem; color: var(--dim); line-height: 1.4; }
+.class-card .stats-preview { margin-top: 0.7rem; font-size: 0.65rem; }
+.stat-bar-mini { display: flex; align-items: center; gap: 0.3rem; margin-top: 0.2rem; }
+.stat-bar-mini span { width: 55px; color: var(--dim); }
+.stat-fill-mini { height: 4px; background: var(--glow); }
+
+.btn {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 0.85rem;
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  padding: 0.8rem 2.5rem;
+  border: 2px solid var(--glow);
+  background: transparent;
+  color: var(--glow);
+  cursor: pointer;
+  transition: all 0.2s;
+  clip-path: polygon(10px 0, 100% 0, calc(100% - 10px) 100%, 0 100%);
+  text-transform: uppercase;
+}
+.btn:hover {
+  background: var(--glow);
+  color: var(--bg);
+  box-shadow: 0 0 30px rgba(0,212,255,0.5);
+}
+.btn:disabled { opacity: 0.3; cursor: not-allowed; }
+.btn-red { border-color: var(--red); color: var(--red); }
+.btn-red:hover { background: var(--red); box-shadow: 0 0 30px rgba(255,51,85,0.5); }
+.btn-gold { border-color: var(--gold); color: var(--gold); }
+.btn-gold:hover { background: var(--gold); color: var(--bg); box-shadow: 0 0 30px rgba(255,215,0,0.5); }
+.btn-green { border-color: var(--green); color: var(--green); }
+.btn-green:hover { background: var(--green); color: var(--bg); }
+.btn-purple { border-color: var(--purple); color: var(--purple); }
+.btn-purple:hover { background: var(--purple); color: white; }
+
+/* ── MAIN GAME UI ── */
+#game-screen { display: none; width: 100%; max-width: 1100px; padding: 1rem; min-height: 100vh; flex-direction: column; gap: 0.8rem; }
+
+/* Top bar */
+.top-bar {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0.6rem 1rem;
+  border: 1px solid var(--border);
+  background: var(--panel);
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+.floor-badge {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 0.7rem;
+  color: var(--glow2);
+  letter-spacing: 0.2em;
+}
+.budget-display {
+  font-family: 'VT323', monospace;
+  font-size: 1.4rem;
+  color: var(--gold);
+  text-shadow: 0 0 10px rgba(255,215,0,0.5);
+}
+
+/* Stats panel */
+.stats-panel {
+  display: flex; gap: 1.5rem; align-items: center; flex-wrap: wrap;
+}
+.stat-group { display: flex; flex-direction: column; gap: 0.3rem; min-width: 120px; }
+.stat-label {
+  font-size: 0.6rem; letter-spacing: 0.15em; color: var(--dim); text-transform: uppercase;
+}
+.stat-bar-wrap { display: flex; align-items: center; gap: 0.5rem; }
+.stat-bar-bg { flex: 1; height: 8px; background: #1a1a2e; border: 1px solid var(--border); }
+.stat-bar-fill { height: 100%; transition: width 0.4s ease; }
+.integrity-fill { background: linear-gradient(90deg, var(--red), #ff6b8a); box-shadow: 0 0 6px var(--red); }
+.lineage-fill { background: linear-gradient(90deg, var(--glow), #80e8ff); box-shadow: 0 0 6px var(--glow); }
+.latency-fill { background: linear-gradient(90deg, var(--glow2), #ffaa80); box-shadow: 0 0 6px var(--glow2); }
+.stat-val { font-size: 0.7rem; min-width: 36px; text-align: right; }
+
+/* Main layout */
+.game-layout { display: grid; grid-template-columns: 200px 1fr 220px; gap: 0.8rem; flex: 1; }
+
+/* Mini map */
+.map-panel {
+  border: 1px solid var(--border);
+  background: var(--panel);
+  padding: 0.8rem;
+}
+.map-panel h3 { font-family: 'Orbitron', sans-serif; font-size: 0.6rem; color: var(--dim); letter-spacing: 0.2em; margin-bottom: 0.7rem; }
+.dungeon-map { display: grid; grid-template-columns: repeat(5, 1fr); gap: 3px; }
+.map-cell {
+  aspect-ratio: 1;
+  border: 1px solid #1a1a2e;
+  background: #0a0a15;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.55rem;
+  cursor: pointer;
+  transition: all 0.15s;
+  position: relative;
+}
+.map-cell.current { border-color: var(--glow); box-shadow: 0 0 8px var(--glow); background: rgba(0,212,255,0.1); }
+.map-cell.visited { background: #12121e; border-color: var(--border); }
+.map-cell.hidden { background: #050508; }
+.map-cell.boss-room { border-color: var(--red); }
+.map-cell.available { border-color: var(--glow3); cursor: pointer; animation: pulse-green 1.5s infinite; }
+.map-cell.available:hover { background: rgba(127,255,0,0.1); }
+
+.room-icons { display: flex; flex-direction: column; gap: 0.3rem; margin-top: 0.7rem; }
+.room-legend { font-size: 0.6rem; color: var(--dim); display: flex; align-items: center; gap: 0.3rem; }
+
+/* Center: combat / event area */
+.combat-panel {
+  border: 1px solid var(--border);
+  background: var(--panel);
+  display: flex; flex-direction: column;
+  min-height: 400px;
+}
+.combat-header {
+  border-bottom: 1px solid var(--border);
+  padding: 0.7rem 1rem;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.room-title { font-family: 'Orbitron', sans-serif; font-size: 0.75rem; color: var(--glow); }
+.room-type-badge {
+  font-size: 0.6rem; padding: 0.2rem 0.6rem;
+  border: 1px solid;
+  letter-spacing: 0.1em;
+}
+
+.combat-arena {
+  flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center;
+  padding: 1.5rem; gap: 1rem;
+  position: relative;
+}
+
+/* Enemy display */
+.enemy-display {
+  display: flex; flex-direction: column; align-items: center; gap: 0.8rem;
+  width: 100%;
+}
+.enemy-sprite {
+  font-size: 5rem;
+  animation: float 3s ease-in-out infinite;
+  filter: drop-shadow(0 0 20px var(--red));
+  position: relative;
+}
+.enemy-sprite.ghost { filter: drop-shadow(0 0 20px rgba(168,85,247,0.8)); opacity: 0.6; }
+.enemy-sprite.revealed { opacity: 1 !important; }
+.enemy-sprite.shake { animation: shake 0.4s; }
+
+.enemy-name { font-family: 'Orbitron', sans-serif; font-size: 0.9rem; color: var(--red); text-shadow: 0 0 10px var(--red); }
+.enemy-flavor { font-size: 0.7rem; color: var(--dim); text-align: center; font-style: italic; max-width: 300px; }
+.enemy-hp-bar { width: 200px; }
+.enemy-hp-label { font-size: 0.65rem; color: var(--dim); margin-bottom: 0.3rem; text-align: center; }
+.enemy-hp-bg { height: 10px; background: #1a0010; border: 1px solid var(--red); }
+.enemy-hp-fill { height: 100%; background: linear-gradient(90deg, var(--red), #ff6b8a); transition: width 0.4s; }
+
+/* VS separator */
+.vs-text {
+  font-family: 'VT323', monospace;
+  font-size: 2rem;
+  color: var(--gold);
+  text-shadow: 0 0 10px var(--gold);
+}
+
+/* Combat log */
+.combat-log {
+  border-top: 1px solid var(--border);
+  padding: 0.7rem 1rem;
+  height: 120px;
+  overflow-y: auto;
+  font-size: 0.72rem;
+  line-height: 1.7;
+}
+.combat-log::-webkit-scrollbar { width: 4px; }
+.combat-log::-webkit-scrollbar-thumb { background: var(--border); }
+.log-entry { margin-bottom: 0.1rem; }
+.log-player { color: var(--green); }
+.log-enemy { color: var(--red); }
+.log-system { color: var(--glow); }
+.log-warn { color: var(--gold); }
+.log-item { color: var(--purple); }
+
+/* Action buttons */
+.action-bar {
+  border-top: 1px solid var(--border);
+  padding: 0.8rem 1rem;
+  display: flex; gap: 0.6rem; flex-wrap: wrap;
+}
+
+/* Right panel: inventory + abilities */
+.right-panel { display: flex; flex-direction: column; gap: 0.8rem; }
+
+.inventory-panel, .ability-panel, .char-panel {
+  border: 1px solid var(--border);
+  background: var(--panel);
+  padding: 0.8rem;
+}
+.panel-title { font-family: 'Orbitron', sans-serif; font-size: 0.6rem; color: var(--dim); letter-spacing: 0.2em; margin-bottom: 0.7rem; border-bottom: 1px solid var(--border); padding-bottom: 0.4rem; }
+
+.item-slot {
+  display: flex; align-items: center; gap: 0.5rem;
+  padding: 0.35rem 0.4rem;
+  border: 1px solid transparent;
+  margin-bottom: 0.3rem;
+  cursor: pointer;
+  transition: all 0.15s;
+  font-size: 0.7rem;
+}
+.item-slot:hover { border-color: var(--glow); background: rgba(0,212,255,0.05); }
+.item-slot.equipped { border-color: var(--gold); }
+.item-icon { font-size: 1.1rem; }
+.item-info { flex: 1; }
+.item-name { color: var(--text); font-size: 0.68rem; }
+.item-stat { color: var(--dim); font-size: 0.6rem; }
+.item-rarity-common { border-left: 2px solid var(--dim); padding-left: 0.3rem; }
+.item-rarity-rare { border-left: 2px solid var(--glow); padding-left: 0.3rem; }
+.item-rarity-epic { border-left: 2px solid var(--purple); padding-left: 0.3rem; }
+.item-rarity-legendary { border-left: 2px solid var(--gold); padding-left: 0.3rem; }
+
+.ability-btn {
+  display: flex; align-items: center; gap: 0.5rem;
+  padding: 0.4rem 0.5rem;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--text);
+  cursor: pointer;
+  margin-bottom: 0.3rem;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.68rem;
+  width: 100%;
+  text-align: left;
+  transition: all 0.15s;
+}
+.ability-btn:hover:not(:disabled) { border-color: var(--purple); color: var(--purple); background: rgba(168,85,247,0.05); }
+.ability-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+.ability-cool { font-size: 0.6rem; color: var(--glow2); margin-left: auto; }
+
+/* Char panel */
+.char-name-display { font-family: 'Orbitron', sans-serif; font-size: 0.8rem; color: var(--glow); margin-bottom: 0.3rem; }
+.char-class-display { font-size: 0.65rem; color: var(--dim); margin-bottom: 0.5rem; }
+.level-display { font-size: 0.7rem; color: var(--gold); }
+.xp-bar-bg { height: 4px; background: #1a1a2e; margin-top: 0.3rem; border: 1px solid var(--border); }
+.xp-bar-fill { height: 100%; background: var(--gold); transition: width 0.5s; }
+
+/* Non-combat screens */
+.event-panel {
+  flex: 1; padding: 2rem; display: flex; flex-direction: column; align-items: center; gap: 1rem; text-align: center;
+}
+.event-title { font-family: 'VT323', monospace; font-size: 2rem; color: var(--glow); }
+.event-desc { font-size: 0.8rem; color: var(--text); max-width: 450px; line-height: 1.7; }
+.event-choices { display: flex; gap: 1rem; flex-wrap: wrap; justify-content: center; margin-top: 1rem; }
+
+.loot-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.7rem; margin-top: 1rem; width: 100%; max-width: 400px; }
+.loot-card {
+  border: 1px solid var(--border);
+  padding: 0.8rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-align: left;
+}
+.loot-card:hover { border-color: var(--gold); box-shadow: 0 0 10px rgba(255,215,0,0.2); transform: translateY(-2px); }
+.loot-card .loot-icon { font-size: 1.8rem; margin-bottom: 0.3rem; }
+.loot-card .loot-name { font-size: 0.72rem; color: var(--gold); margin-bottom: 0.2rem; font-family: 'Orbitron', sans-serif; font-size: 0.6rem; }
+.loot-card .loot-desc { font-size: 0.62rem; color: var(--dim); line-height: 1.4; }
+
+/* Shop */
+.shop-grid { display: flex; flex-direction: column; gap: 0.5rem; width: 100%; max-width: 450px; }
+.shop-item {
+  display: flex; align-items: center; gap: 0.8rem;
+  border: 1px solid var(--border);
+  padding: 0.6rem 0.8rem;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.shop-item:hover { border-color: var(--gold); background: rgba(255,215,0,0.03); }
+.shop-price { font-size: 0.8rem; color: var(--gold); font-family: 'VT323', monospace; min-width: 45px; }
+
+/* Overlay panels */
+.overlay {
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,0.85);
+  display: flex; align-items: center; justify-content: center;
+  z-index: 100;
+  backdrop-filter: blur(4px);
+}
+.overlay-box {
+  border: 2px solid var(--glow);
+  background: var(--panel);
+  padding: 2.5rem;
+  max-width: 500px;
+  width: 90%;
+  text-align: center;
+  box-shadow: 0 0 60px rgba(0,212,255,0.2);
+  clip-path: polygon(0 0, calc(100% - 20px) 0, 100% 20px, 100% 100%, 20px 100%, 0 calc(100% - 20px));
+}
+.overlay-title { font-family: 'VT323', monospace; font-size: 2.5rem; margin-bottom: 1rem; }
+.overlay-desc { font-size: 0.8rem; color: var(--dim); line-height: 1.7; margin-bottom: 1.5rem; }
+
+/* Death screen */
+.death-title { color: var(--red); text-shadow: 0 0 30px var(--red); }
+.win-title { color: var(--gold); text-shadow: 0 0 30px var(--gold); }
+
+/* Damage floaters */
+.damage-floater {
+  position: absolute;
+  font-family: 'VT323', monospace;
+  font-size: 1.8rem;
+  font-weight: bold;
+  pointer-events: none;
+  animation: floatUp 1s ease-out forwards;
+  z-index: 10;
+}
+.dmg-player { color: var(--red); }
+.dmg-enemy { color: var(--green); }
+.dmg-special { color: var(--purple); }
+.dmg-miss { color: var(--dim); font-size: 1.2rem; }
+
+/* Tooltip */
+.tooltip-box {
+  position: fixed;
+  background: var(--panel);
+  border: 1px solid var(--glow);
+  padding: 0.5rem 0.8rem;
+  font-size: 0.68rem;
+  max-width: 200px;
+  z-index: 200;
+  pointer-events: none;
+  color: var(--text);
+  box-shadow: 0 0 15px rgba(0,212,255,0.2);
+}
+
+/* Animations */
+@keyframes flicker {
+  0%,95%,100% { opacity: 1; }
+  96% { opacity: 0.7; }
+  97% { opacity: 1; }
+  98% { opacity: 0.5; }
+  99% { opacity: 1; }
+}
+@keyframes float {
+  0%,100% { transform: translateY(0px); }
+  50% { transform: translateY(-8px); }
+}
+@keyframes shake {
+  0%,100% { transform: translateX(0); }
+  20% { transform: translateX(-8px); }
+  40% { transform: translateX(8px); }
+  60% { transform: translateX(-6px); }
+  80% { transform: translateX(6px); }
+}
+@keyframes floatUp {
+  0% { transform: translateY(0) scale(1); opacity: 1; }
+  100% { transform: translateY(-80px) scale(1.3); opacity: 0; }
+}
+@keyframes pulse-green {
+  0%,100% { box-shadow: 0 0 0 rgba(127,255,0,0); }
+  50% { box-shadow: 0 0 8px rgba(127,255,0,0.5); }
+}
+@keyframes scanline {
+  0% { background-position: 0 0; }
+  100% { background-position: 0 100%; }
+}
+@keyframes slideIn {
+  from { transform: translateX(30px); opacity: 0; }
+  to { transform: translateX(0); opacity: 1; }
+}
+
+.fade-in { animation: slideIn 0.3s ease-out; }
+
+/* Status effects */
+.status-bar { display: flex; gap: 0.4rem; margin-top: 0.3rem; flex-wrap: wrap; }
+.status-badge {
+  font-size: 0.55rem; padding: 0.1rem 0.4rem;
+  border: 1px solid;
+  letter-spacing: 0.1em;
+}
+.status-queried { border-color: var(--glow); color: var(--glow); }
+.status-budget-drain { border-color: var(--gold); color: var(--gold); }
+.status-stunned { border-color: var(--purple); color: var(--purple); }
+.status-shielded { border-color: var(--green); color: var(--green); }
+.status-corrupted { border-color: var(--red); color: var(--red); }
+.status-turbo { border-color: var(--glow2); color: var(--glow2); }
+
+/* Level up flash */
+.level-flash {
+  position: fixed; inset: 0; pointer-events: none;
+  background: radial-gradient(circle, rgba(255,215,0,0.15), transparent 70%);
+  animation: levelFlash 0.8s ease-out forwards;
+  z-index: 50;
+}
+@keyframes levelFlash {
+  0% { opacity: 1; }
+  100% { opacity: 0; }
+}
+
+/* Notification */
+.notif {
+  position: fixed; top: 1rem; right: 1rem;
+  background: var(--panel);
+  border: 1px solid var(--glow);
+  padding: 0.6rem 1rem;
+  font-size: 0.72rem;
+  z-index: 300;
+  animation: notifIn 0.3s ease-out, notifOut 0.3s ease-in 2.5s forwards;
+  max-width: 250px;
+}
+@keyframes notifIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+@keyframes notifOut { from { opacity: 1; } to { opacity: 0; transform: translateY(-10px); } }
+
+.hidden { display: none !important; }
+
+/* Responsive */
+@media (max-width: 700px) {
+  .game-layout { grid-template-columns: 1fr; }
+  .map-panel { order: 3; }
+  .right-panel { order: 2; }
+}
+</style>
+</head>
+<body>
+
+<!-- ══════════ TITLE SCREEN ══════════ -->
+<div id="title-screen">
+  <div class="title-ascii">DATA<br>DUNGEON</div>
+  <div class="title-sub">⚔ A CORPORATE ROGUELIKE ⚔</div>
+  <div class="title-tagline">// FLOOR -1 OF THE DATA WAREHOUSE // SURVIVAL NOT GUARANTEED //</div>
+
+  <div style="margin-top:2rem; font-size:0.75rem; color:var(--dim); max-width:500px; line-height:1.8; text-align:center;">
+    Deep beneath the office campus lies a forgotten data warehouse.<br>
+    Something has gone <span style="color:var(--red)">terribly wrong</span>. The data is ungoverned.<br>
+    You are the last certified <span style="color:var(--glow)">Data Steward</span>. Descend. Govern. Survive.
+  </div>
+
+  <div style="margin-top:2rem; font-family:'Orbitron',sans-serif; font-size:0.65rem; color:var(--dim); letter-spacing:0.2em;">SELECT YOUR CLASS</div>
+  <div class="class-select" id="class-select">
+    <div class="class-card" onclick="selectClass('cdo')" id="card-cdo">
+      <div class="icon">🎩</div>
+      <div class="name">Chief Data Officer</div>
+      <div class="desc">High authority, low patience. Commands respect from spreadsheets.</div>
+      <div class="stats-preview">
+        <div class="stat-bar-mini"><span>INTEGRITY</span><div class="stat-fill-mini" style="width:80px; background:var(--red);"></div></div>
+        <div class="stat-bar-mini"><span>LINEAGE</span><div class="stat-fill-mini" style="width:50px; background:var(--glow);"></div></div>
+        <div class="stat-bar-mini"><span>LATENCY</span><div class="stat-fill-mini" style="width:35px; background:var(--glow2);"></div></div>
+      </div>
+    </div>
+    <div class="class-card" onclick="selectClass('ninja')" id="card-ninja">
+      <div class="icon">🥷</div>
+      <div class="name">Privacy Ninja</div>
+      <div class="desc">Fast, evasive. Masks PII before enemies can even query it.</div>
+      <div class="stats-preview">
+        <div class="stat-bar-mini"><span>INTEGRITY</span><div class="stat-fill-mini" style="width:50px; background:var(--red);"></div></div>
+        <div class="stat-bar-mini"><span>LINEAGE</span><div class="stat-fill-mini" style="width:65px; background:var(--glow);"></div></div>
+        <div class="stat-bar-mini"><span>LATENCY</span><div class="stat-fill-mini" style="width:80px; background:var(--glow2);"></div></div>
+      </div>
+    </div>
+    <div class="class-card" onclick="selectClass('wizard')" id="card-wizard">
+      <div class="icon">🧙‍♂️</div>
+      <div class="name">SQL Wizard</div>
+      <div class="desc">Balanced scholar. Can query hidden enemies and cast joins.</div>
+      <div class="stats-preview">
+        <div class="stat-bar-mini"><span>INTEGRITY</span><div class="stat-fill-mini" style="width:60px; background:var(--red);"></div></div>
+        <div class="stat-bar-mini"><span>LINEAGE</span><div class="stat-fill-mini" style="width:75px; background:var(--glow);"></div></div>
+        <div class="stat-bar-mini"><span>LATENCY</span><div class="stat-fill-mini" style="width:55px; background:var(--glow2);"></div></div>
+      </div>
+    </div>
+  </div>
+
+  <button class="btn" id="start-btn" onclick="startGame()" disabled>[ ENTER THE DUNGEON ]</button>
+  <div style="margin-top:1.5rem; font-size:0.65rem; color:var(--dim);">
+    🧟 ZOMBIE SPREADSHEET &nbsp;|&nbsp; 👻 GHOST SCHEMA &nbsp;|&nbsp; 🕷️ SHADOW IT SPIDER &nbsp;|&nbsp; 🧙 ROGUE ANALYST
+  </div>
+</div>
+
+<!-- ══════════ GAME SCREEN ══════════ -->
+<div id="game-screen" style="display:none; width:100%; max-width:1100px; padding:1rem; min-height:100vh; display:none; flex-direction:column; gap:0.8rem;">
+
+  <!-- Top bar -->
+  <div class="top-bar">
+    <div>
+      <div class="floor-badge" id="floor-badge">FLOOR B1 — THE LEGACY MAINFRAME CATACOMBS</div>
+      <div class="status-bar" id="global-status"></div>
+    </div>
+    <div class="stats-panel">
+      <div class="stat-group">
+        <div class="stat-label">❤ INTEGRITY</div>
+        <div class="stat-bar-wrap">
+          <div class="stat-bar-bg" style="width:120px"><div class="stat-bar-fill integrity-fill" id="hp-bar" style="width:100%"></div></div>
+          <div class="stat-val" id="hp-val">100/100</div>
+        </div>
+      </div>
+      <div class="stat-group">
+        <div class="stat-label">🔗 LINEAGE</div>
+        <div class="stat-bar-wrap">
+          <div class="stat-bar-bg" style="width:80px"><div class="stat-bar-fill lineage-fill" id="lineage-bar" style="width:100%"></div></div>
+          <div class="stat-val" id="lineage-val">10</div>
+        </div>
+      </div>
+      <div class="stat-group">
+        <div class="stat-label">⚡ LATENCY</div>
+        <div class="stat-bar-wrap">
+          <div class="stat-bar-bg" style="width:80px"><div class="stat-bar-fill latency-fill" id="latency-bar" style="width:100%"></div></div>
+          <div class="stat-val" id="latency-val">10</div>
+        </div>
+      </div>
+    </div>
+    <div class="budget-display">💰 <span id="budget-val">500</span> BUDGET</div>
+  </div>
+
+  <!-- Game layout -->
+  <div class="game-layout">
+
+    <!-- Mini Map -->
+    <div class="map-panel">
+      <h3>DUNGEON MAP</h3>
+      <div class="dungeon-map" id="dungeon-map"></div>
+      <div class="room-icons" style="margin-top:0.8rem;">
+        <div class="room-legend">⚔ Combat Room</div>
+        <div class="room-legend">💰 Loot Room</div>
+        <div class="room-legend">🏪 Shop</div>
+        <div class="room-legend">📋 Event</div>
+        <div class="room-legend">👑 Boss Room</div>
+        <div class="room-legend">🚪 Stairs Down</div>
+      </div>
+      <div style="margin-top:1rem; border-top:1px solid var(--border); padding-top:0.7rem;">
+        <div class="panel-title">QUESTS</div>
+        <div id="quest-log" style="font-size:0.65rem; color:var(--dim); line-height:1.8;"></div>
+      </div>
+    </div>
+
+    <!-- Combat Panel -->
+    <div class="combat-panel" id="combat-panel">
+      <div class="combat-header">
+        <div class="room-title" id="room-title">SELECT A ROOM TO EXPLORE</div>
+        <div class="room-type-badge" id="room-badge" style="border-color:var(--glow); color:var(--glow);">READY</div>
+      </div>
+      <div class="combat-arena" id="combat-arena">
+        <div style="text-align:center; color:var(--dim); font-size:0.8rem; line-height:2;">
+          <div style="font-size:3rem; margin-bottom:1rem;">🗺️</div>
+          Click an adjacent glowing room on the map to explore.<br>
+          Watch your <span style="color:var(--red)">INTEGRITY</span>, manage your <span style="color:var(--gold)">BUDGET</span>.<br>
+          <span style="color:var(--glow2)">Reach Floor B5 and defeat the Ungoverned Data Lake.</span>
+        </div>
+      </div>
+      <div class="combat-log" id="combat-log">
+        <div class="log-entry log-system">▶ Welcome to the Data Dungeon, Steward.</div>
+        <div class="log-entry log-system">▶ The audit has begun. The data is restless.</div>
+        <div class="log-entry log-warn">▶ TIP: Ghost Schemas are invisible until QUERIED.</div>
+      </div>
+      <div class="action-bar" id="action-bar"></div>
+    </div>
+
+    <!-- Right Panel -->
+    <div class="right-panel">
+      <div class="char-panel">
+        <div class="panel-title">STEWARD FILE</div>
+        <div class="char-name-display" id="char-name">DATA STEWARD</div>
+        <div class="char-class-display" id="char-class">CLASS: —</div>
+        <div class="level-display">LVL <span id="char-level">1</span> &nbsp;|&nbsp; XP: <span id="char-xp">0</span>/<span id="char-xp-max">100</span></div>
+        <div class="xp-bar-bg"><div class="xp-bar-fill" id="xp-bar" style="width:0%"></div></div>
+        <div style="margin-top:0.5rem; font-size:0.62rem; color:var(--dim);">Kills: <span id="kill-count">0</span> &nbsp;|&nbsp; Floor: <span id="floor-count">1</span>/5</div>
+      </div>
+
+      <div class="ability-panel">
+        <div class="panel-title">ABILITIES</div>
+        <div id="abilities-list"></div>
+      </div>
+
+      <div class="inventory-panel">
+        <div class="panel-title">INVENTORY (EQUIPPED)</div>
+        <div id="inventory-list"><div style="font-size:0.65rem; color:var(--dim);">No items equipped.</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Overlay (death, win, level up choices) -->
+<div class="overlay hidden" id="overlay">
+  <div class="overlay-box" id="overlay-box"></div>
+</div>
+
+<!-- Tooltip -->
+<div class="tooltip-box hidden" id="tooltip"></div>
+
+<script>
+// ══════════════════════════════════
+//  DATA DUNGEON — GAME ENGINE
+// ══════════════════════════════════
+
+// ── Game State ──
+let G = {};
+
+function initState(cls) {
+  const classes = {
+    cdo: { name:'CDO', icon:'🎩', hp:120, maxHp:120, lineage:8, latency:6, abilities:['executive_memo','budget_freeze','restructure'] },
+    ninja: { name:'Privacy Ninja', icon:'🥷', hp:85, maxHp:85, lineage:10, latency:12, abilities:['pii_mask','double_encrypt','vanish'] },
+    wizard: { name:'SQL Wizard', icon:'🧙‍♂️', hp:100, maxHp:100, lineage:12, latency:8, abilities:['select_star','explain_plan','drop_table'] },
+  };
+  const c = classes[cls];
+  G = {
+    cls, ...c,
+    attack: c.lineage,
+    budget: 500,
+    xp: 0, xpMax: 100, level: 1,
+    kills: 0, floor: 1,
+    inventory: [], maxInv: 6,
+    statuses: [],
+    cooldowns: {},
+    rooms: [],
+    currentRoom: null,
+    combatActive: false,
+    enemy: null,
+    roomsCleared: 0,
+    quests: [
+      { id:'kills3', text:'Defeat 3 monsters', done: false },
+      { id:'shop', text:'Visit the Data Shop', done: false },
+      { id:'boss1', text:'Defeat the Floor Boss', done: false },
+    ],
+    turnCount: 0,
+  };
+  generateFloor();
+}
+
+// ── Floor Generation ──
+const FLOOR_NAMES = [
+  'LEGACY MAINFRAME CATACOMBS',
+  'SHADOW IT SPIDER LAIR',
+  'POWERPOINT GRAVEYARD',
+  'THE COMPLIANCE LABYRINTH',
+  'UNGOVERNED DATA LAKE [FINAL]',
+];
+
+function generateFloor() {
+  // 5x4 grid = 20 cells, random room types
+  const types = [];
+  const count = 20;
+  // Start room
+  types.push('start');
+  // Boss room at end
+  // Fill rest
+  const pool = ['combat','combat','combat','combat','loot','loot','shop','event','event','combat','combat','loot','event','combat','loot','combat','event','combat'];
+  for(let i=1;i<count-1;i++) types.push(pool[i % pool.length]);
+  types.push('boss');
+  // Shuffle middle
+  for(let i=types.length-2;i>1;i--) {
+    const j = 1 + Math.floor(Math.random()*(i-1));
+    [types[i],types[j]] = [types[j],types[i]];
+  }
+  types[0] = 'start';
+  types[count-1] = 'boss';
+
+  G.rooms = types.map((type,i)=>({
+    id: i, type,
+    visited: i===0,
+    cleared: i===0,
+    x: i%5, y: Math.floor(i/5),
+    enemy: type==='combat'||type==='boss' ? rollEnemy(type==='boss') : null,
+    loot: null,
+    shopItems: type==='shop' ? rollShop() : [],
+    event: type==='event' ? rollEvent() : null,
+  }));
+  G.currentRoom = 0;
+  G.rooms[0].visited = true;
+  G.rooms[0].cleared = true;
+  document.getElementById('floor-badge').textContent = `FLOOR B${G.floor} — ${FLOOR_NAMES[G.floor-1]}`;
+  document.getElementById('floor-count').textContent = G.floor;
+  renderMap();
+  showRoomIntro(0);
+}
+
+// ── Enemy Templates ──
+const ENEMY_POOL = [
+  {
+    id:'zombie_spreadsheet', name:'ZOMBIE SPREADSHEET', icon:'🧟',
+    flavor:'"It\'s been alive since 2009. Nobody knows who owns it."',
+    hp:40, maxHp:40, attack:12, defense:8, xp:40, budget:60,
+    special:'VLOOKUP_STRIKE', specialName:'VLOOKUP Strike',
+    specialDesc:'References a deleted cell. You lose LINEAGE.',
+    isGhost:false, minions:false, stealsBudget:false,
+    class:'zombie'
+  },
+  {
+    id:'ghost_schema', name:'GHOST SCHEMA', icon:'👻',
+    flavor:'"Appears in the query planner but has no owner. Spooky."',
+    hp:30, maxHp:30, attack:18, defense:3, xp:50, budget:80,
+    special:'HAUNT', specialName:'Schema Haunt',
+    specialDesc:'Drains your LINEAGE until queried.',
+    isGhost:true, minions:false, stealsBudget:false,
+    class:'ghost'
+  },
+  {
+    id:'shadow_spider', name:'SHADOW IT SPIDER', icon:'🕷️',
+    flavor:'"Deployed a rogue Tableau server in the break room."',
+    hp:35, maxHp:35, attack:14, defense:5, xp:55, budget:90,
+    special:'SPAWN_MINION', specialName:'Spawn Shadow App',
+    specialDesc:'Spawns a minion that deals extra damage next turn.',
+    isGhost:false, minions:true, stealsBudget:false,
+    class:'spider', minionHp:30, minionActive:false,
+  },
+  {
+    id:'rogue_analyst', name:'ROGUE ANALYST', icon:'🧙',
+    flavor:'"Has admin access. Nobody knows how. Has pivot tables for everything."',
+    hp:32, maxHp:32, attack:16, defense:6, xp:60, budget:120,
+    special:'BUDGET_DRAIN', specialName:'Expense Report',
+    specialDesc:'Steals 50 BUDGET from your account.',
+    isGhost:false, minions:false, stealsBudget:true,
+    class:'analyst'
+  },
+];
+
+const BOSS_POOL = [
+  {
+    id:'data_lake', name:'THE UNGOVERNED DATA LAKE', icon:'🌊',
+    flavor:'"A primordial chaos of untagged, unmasked, unclassified data. It has achieved sentience. It is very upset."',
+    hp:150, maxHp:150, attack:30, defense:15, xp:500, budget:500,
+    special:'SCHEMA_FLOOD', specialName:'Schema Flood',
+    specialDesc:'Floods your INTEGRITY with raw unmasked data. -30 HP.',
+    isGhost:false, minions:false, stealsBudget:false,
+    class:'boss', isBoss:true,
+  },
+  {
+    id:'excel_king', name:'KING EXCEL THE ETERNAL', icon:'📊',
+    flavor:'"Has 47 sheets. Sheet 1 is empty. Sheet 47 is the entire company budget in Comic Sans."',
+    hp:100, maxHp:100, attack:25, defense:12, xp:400, budget:400,
+    special:'CIRCULAR_REF', specialName:'Circular Reference',
+    specialDesc:'Deals damage that loops back to you twice.',
+    isGhost:false, minions:false, stealsBudget:false,
+    class:'boss', isBoss:true,
+  },
+];
+
+function rollEnemy(isBoss) {
+  const pool = isBoss ? BOSS_POOL : ENEMY_POOL;
+  const template = pool[Math.floor(Math.random()*pool.length)];
+  return JSON.parse(JSON.stringify(template)); // deep clone
+}
+
+// ── Events ──
+const EVENTS = [
+  {
+    title:'🖨️ THE PRINTER IS SENTIENT',
+    desc:'The basement printer has been printing random data dictionaries for 3 years. It offers you a deal.',
+    choices:[
+      { text:'Accept its terms (+80 BUDGET)', action:()=>{ G.budget+=80; addLog('The printer accepts you as a peer. +80 Budget.','warn'); } },
+      { text:'Destroy it (+30 XP, -15 HP)', action:()=>{ G.hp=Math.max(1,G.hp-15); gainXP(30); addLog('Paper cuts. So many paper cuts.','player'); } },
+    ]
+  },
+  {
+    title:'📧 ALL-COMPANY EMAIL',
+    desc:'"Hi All — not sure if this is the right thread but I attached the customer SSN file to this reply-all. Sorry! — Karen"',
+    choices:[
+      { text:'Patch the breach (+60 XP, -20 Budget)', action:()=>{ G.budget-=20; gainXP(60); addLog('Breach contained. Karen has been "redeployed".','player'); } },
+      { text:'Ignore it (save Budget, lose 20 HP later)', action:()=>{ G.hp=Math.max(1,G.hp-20); addLog('The regulator calls. It is not happy.','enemy'); } },
+    ]
+  },
+  {
+    title:'🤝 THE VENDOR MEETING',
+    desc:'A vendor promises their "AI-powered data governance solution" will solve everything for just $999/month. (It\'s a spreadsheet.)',
+    choices:[
+      { text:'Buy it (-150 Budget, +5 LINEAGE)', action:()=>{ if(G.budget>=150){G.budget-=150;G.lineage+=5;G.attack+=5;addLog('It\'s a very nice spreadsheet, actually.','system');}else addLog('Not enough budget!','warn'); } },
+      { text:'Build your own (+80 XP)', action:()=>{ gainXP(80); addLog('You open a blank Notion page. Progress!','player'); } },
+    ]
+  },
+  {
+    title:'👴 THE LEGACY DEVELOPER',
+    desc:'A developer who left in 2015 is still in the building. He maintains a system nobody understands. He offers mentorship.',
+    choices:[
+      { text:'Learn from him (+3 LINEAGE, -50 Budget)', action:()=>{ if(G.budget>=50){G.budget-=50;G.lineage+=3;G.attack+=3;addLog('Ancient wisdom acquired. Mostly Cobol tips.','system');}else addLog('Not enough budget!','warn'); } },
+      { text:'Document his system (+100 XP)', action:()=>{ gainXP(100); addLog('You now have 400 pages of documentation nobody will read.','player'); } },
+    ]
+  },
+  {
+    title:'☕ COFFEE MACHINE DATA BREACH',
+    desc:'The "smart" coffee machine has been logging employee caffeine habits and selling data to Big Coffee™.',
+    choices:[
+      { text:'Unplug it (+50 XP, morale -10 HP)', action:()=>{ gainXP(50); G.hp=Math.max(1,G.hp-10); addLog('People are VERY unhappy about the coffee machine.','enemy'); } },
+      { text:'Audit Big Coffee™ (+120 Budget)', action:()=>{ G.budget+=120; addLog('Settlement reached. Coffee data was worth a lot.','warn'); } },
+    ]
+  },
+];
+
+function rollEvent() {
+  return EVENTS[Math.floor(Math.random()*EVENTS.length)];
+}
+
+// ── Shop Items ──
+const SHOP_POOL = [
+  { name:'Data Catalog Sword', icon:'📖', desc:'Lineage+4, Attack+4', cost:120, effect:()=>{ G.lineage+=4;G.attack+=4; }, rarity:'rare' },
+  { name:'Encryption Shield', icon:'🔐', desc:'Reduces incoming damage by 20%', cost:100, effect:()=>{ addStatus('shielded','🛡️ ENCRYPTED',5); }, rarity:'rare' },
+  { name:'GDPR Compliance Flare', icon:'🔥', desc:'Deal 40 dmg to all enemies', cost:150, effect:()=>{ if(G.enemy){ G.enemy.hp=Math.max(0,G.enemy.hp-40); addLog('GDPR FLARE — 40 DAMAGE!','player'); checkEnemyDead(); } }, rarity:'epic' },
+  { name:'SQL Optimizer Potion', icon:'⚗️', desc:'Restore 40 INTEGRITY', cost:80, effect:()=>{ G.hp=Math.min(G.maxHp, G.hp+40); }, rarity:'common' },
+  { name:'ISO 27001 Certificate', icon:'📜', desc:'Latency+3, defense boost', cost:90, effect:()=>{ G.latency+=3; addStatus('shielded','🛡️ ISO',3); }, rarity:'common' },
+  { name:'Retroactive Data Dictionary', icon:'📚', desc:'Gain 80 XP, Lineage+2', cost:70, effect:()=>{ gainXP(80); G.lineage+=2; G.attack+=2; }, rarity:'common' },
+  { name:'Budget Amplifier', icon:'💹', desc:'Double your budget gain this floor', cost:200, effect:()=>{ G.budget+=200; }, rarity:'legendary' },
+  { name:'Cloud Migration Boots', icon:'☁️', desc:'Latency+5, speed boost (extra action)', cost:160, effect:()=>{ G.latency+=5; addStatus('turbo','⚡ TURBO',3); }, rarity:'epic' },
+];
+
+function rollShop() {
+  const shuffled = [...SHOP_POOL].sort(()=>Math.random()-0.5);
+  return shuffled.slice(0,4);
+}
+
+// ── Abilities ──
+const ABILITIES = {
+  // CDO
+  executive_memo: { name:'Executive Memo', icon:'📧', desc:'Deal 2x attack damage', cost:0, cooldown:3, fn: executiveMemo },
+  budget_freeze: { name:'Budget Freeze', icon:'🧊', desc:'Stun enemy for 1 turn', cost:0, cooldown:4, fn: budgetFreeze },
+  restructure: { name:'Restructure', icon:'♻️', desc:'Heal 30 HP', cost:0, cooldown:5, fn: restructure },
+  // Ninja
+  pii_mask: { name:'PII Mask', icon:'🎭', desc:'Dodge next attack', cost:0, cooldown:3, fn: piiMask },
+  double_encrypt: { name:'Double Encrypt', icon:'🔒', desc:'Deal damage + shield', cost:0, cooldown:4, fn: doubleEncrypt },
+  vanish: { name:'Vanish', icon:'💨', desc:'Skip enemy turn', cost:0, cooldown:5, fn: vanish },
+  // Wizard
+  select_star: { name:'SELECT *', icon:'✨', desc:'Reveal ghost + bonus damage', cost:0, cooldown:2, fn: selectStar },
+  explain_plan: { name:'EXPLAIN PLAN', icon:'📋', desc:'Weaken enemy defense by 50%', cost:0, cooldown:4, fn: explainPlan },
+  drop_table: { name:'DROP TABLE', icon:'💥', desc:'Massive damage (risky)', cost:0, cooldown:6, fn: dropTable },
+};
+
+// ── Loot Pool ──
+const LOOT_POOL = [
+  { name:'Data Catalog Sword', icon:'⚔️', desc:'Lineage+3, Attack+3', rarity:'rare', effect:()=>{ G.lineage+=3;G.attack+=3; } },
+  { name:'Encryption Shield', icon:'🛡️', desc:'Reduces damage taken', rarity:'rare', effect:()=>{ addStatus('shielded','🛡️ ENCRYPTED',4); } },
+  { name:'GDPR Flamethrower', icon:'🔥', desc:'Latency+2, fiery attacks', rarity:'epic', effect:()=>{ G.latency+=2; addLog('Your attacks now have flair. And fire.','item'); } },
+  { name:"Grandma's Recipe (misfiled)", icon:'🍪', desc:'Restores 25 HP (it\'s nice)', rarity:'common', effect:()=>{ G.hp=Math.min(G.maxHp,G.hp+25); } },
+  { name:'Retroactive RACI Matrix', icon:'📊', desc:'Gain 60 XP', rarity:'common', effect:()=>{ gainXP(60); } },
+  { name:'Someone\'s Old Password', icon:'🔑', desc:'Budget+100 (please change it)', rarity:'rare', effect:()=>{ G.budget+=100; } },
+  { name:'Data Quality Report (2019)', icon:'📋', desc:'Lineage+2', rarity:'common', effect:()=>{ G.lineage+=2;G.attack+=2; } },
+  { name:'PII Scrubber', icon:'🧹', desc:'Cleanse all negative statuses', rarity:'epic', effect:()=>{ G.statuses=G.statuses.filter(s=>s.good); addLog('All debuffs cleansed!','system'); } },
+  { name:'SQL Query Wand', icon:'🪄', desc:'Attack+5 on all attacks', rarity:'legendary', effect:()=>{ G.attack+=5; G.lineage+=5; } },
+];
+
+// ══════════════════════════════════
+//  RENDER FUNCTIONS
+// ══════════════════════════════════
+
+function renderMap() {
+  const grid = document.getElementById('dungeon-map');
+  grid.innerHTML = '';
+  const adjacents = getAdjacent(G.currentRoom);
+  G.rooms.forEach((room,i)=>{
+    const cell = document.createElement('div');
+    cell.className = 'map-cell';
+    if(i===G.currentRoom) cell.classList.add('current');
+    else if(room.visited) cell.classList.add('visited');
+    else if(adjacents.includes(i) && room.type!=='start') cell.classList.add('available');
+    else cell.classList.add('hidden');
+
+    if(room.visited || adjacents.includes(i)) {
+      const icons = {start:'🚀',combat:room.cleared?'✓':'⚔',loot:room.cleared?'✓':'💰',shop:'🏪',event:room.cleared?'✓':'📋',boss:room.cleared?'✓':'👑'};
+      cell.textContent = icons[room.type]||'?';
+      if(room.type==='boss') cell.classList.add('boss-room');
+    } else {
+      cell.textContent = '?';
+    }
+
+    if(adjacents.includes(i) && i!==G.currentRoom && !G.combatActive) {
+      cell.onclick = ()=>enterRoom(i);
+    }
+
+    grid.appendChild(cell);
+  });
+}
+
+function renderStats() {
+  const hpPct = Math.max(0,(G.hp/G.maxHp)*100);
+  document.getElementById('hp-bar').style.width = hpPct+'%';
+  document.getElementById('hp-val').textContent = `${G.hp}/${G.maxHp}`;
+
+  const linMax = 20; const latMax = 20;
+  document.getElementById('lineage-bar').style.width = Math.min(100,(G.lineage/linMax)*100)+'%';
+  document.getElementById('lineage-val').textContent = G.lineage;
+  document.getElementById('latency-bar').style.width = Math.min(100,(G.latency/latMax)*100)+'%';
+  document.getElementById('latency-val').textContent = G.latency;
+  document.getElementById('budget-val').textContent = G.budget;
+  document.getElementById('char-level').textContent = G.level;
+  document.getElementById('char-xp').textContent = G.xp;
+  document.getElementById('char-xp-max').textContent = G.xpMax;
+  document.getElementById('xp-bar').style.width = Math.min(100,(G.xp/G.xpMax)*100)+'%';
+  document.getElementById('kill-count').textContent = G.kills;
+
+  // Statuses
+  const sb = document.getElementById('global-status');
+  sb.innerHTML = G.statuses.map(s=>`<span class="status-badge status-${s.type}">${s.label} (${s.turns})</span>`).join('');
+}
+
+function renderInventory() {
+  const el = document.getElementById('inventory-list');
+  if(!G.inventory.length) { el.innerHTML='<div style="font-size:0.65rem;color:var(--dim)">No items.</div>'; return; }
+  el.innerHTML = G.inventory.map(item=>`
+    <div class="item-slot item-rarity-${item.rarity||'common'}" title="${item.desc}">
+      <span class="item-icon">${item.icon}</span>
+      <div class="item-info">
+        <div class="item-name">${item.name}</div>
+        <div class="item-stat">${item.desc}</div>
+      </div>
+    </div>`).join('');
+}
+
+function renderAbilities() {
+  const el = document.getElementById('abilities-list');
+  el.innerHTML = G.abilities.map(id=>{
+    const a = ABILITIES[id];
+    if(!a) return '';
+    const cd = G.cooldowns[id]||0;
+    const ready = cd===0 && G.combatActive;
+    return `<button class="ability-btn" onclick="useAbility('${id}')" ${!ready?'disabled':''}>
+      <span>${a.icon}</span>
+      <span>${a.name}</span>
+      <span class="ability-cool">${cd>0?`CD:${cd}`:'READY'}</span>
+    </button>`;
+  }).join('');
+}
+
+function renderActionBar() {
+  const bar = document.getElementById('action-bar');
+  bar.innerHTML = '';
+  if(!G.combatActive) return;
+
+  const attackBtn = document.createElement('button');
+  attackBtn.className = 'btn';
+  attackBtn.textContent = '⚔ ATTACK';
+  attackBtn.onclick = playerAttack;
+  bar.appendChild(attackBtn);
+
+  // Query ability (always available vs ghost)
+  if(G.enemy && G.enemy.isGhost && !G.enemy.revealed) {
+    const qBtn = document.createElement('button');
+    qBtn.className = 'btn btn-purple';
+    qBtn.textContent = '🔍 QUERY';
+    qBtn.onclick = queryEnemy;
+    bar.appendChild(qBtn);
+  }
+
+  const fleeBtn = document.createElement('button');
+  fleeBtn.className = 'btn btn-red';
+  fleeBtn.textContent = '💨 FLEE (lose 15 HP)';
+  fleeBtn.onclick = flee;
+  bar.appendChild(fleeBtn);
+
+  renderAbilities();
+}
+
+// ══════════════════════════════════
+//  ROOM LOGIC
+// ══════════════════════════════════
+
+function getAdjacent(idx) {
+  const x = idx%5; const y = Math.floor(idx/5);
+  const adj = [];
+  if(x>0) adj.push(idx-1);
+  if(x<4) adj.push(idx+1);
+  if(y>0) adj.push(idx-5);
+  if(y<3) adj.push(idx+5);
+  return adj.filter(i=>i>=0&&i<G.rooms.length);
+}
+
+function enterRoom(idx) {
+  if(G.combatActive) return;
+  G.currentRoom = idx;
+  const room = G.rooms[idx];
+  room.visited = true;
+  renderMap();
+  showRoomIntro(idx);
+}
+
+function showRoomIntro(idx) {
+  const room = G.rooms[idx];
+  const arena = document.getElementById('combat-arena');
+  const bar = document.getElementById('action-bar');
+  G.combatActive = false;
+
+  if(room.cleared && room.type!=='shop') {
+    document.getElementById('room-title').textContent = '✓ CLEARED';
+    document.getElementById('room-badge').textContent = 'DONE';
+    document.getElementById('room-badge').style.borderColor = 'var(--dim)';
+    document.getElementById('room-badge').style.color = 'var(--dim)';
+    arena.innerHTML = '<div style="color:var(--dim);font-size:0.8rem;padding:2rem;text-align:center;">This room has been cleared. Move on, Steward.</div>';
+    bar.innerHTML = '';
+    return;
+  }
+
+  if(room.type==='combat' || room.type==='boss') {
+    startCombat(room);
+  } else if(room.type==='loot') {
+    showLootRoom(room);
+  } else if(room.type==='shop') {
+    showShop(room);
+  } else if(room.type==='event') {
+    showEvent(room);
+  } else if(room.type==='start') {
+    arena.innerHTML = '<div style="color:var(--dim);font-size:0.8rem;padding:2rem;text-align:center;">🚀 Starting room. Choose an adjacent room to explore.</div>';
+    bar.innerHTML = '';
+  }
+}
+
+// ── Combat ──
+function startCombat(room) {
+  const enemy = room.enemy;
+  G.enemy = enemy;
+  G.combatActive = true;
+
+  const isBoss = room.type==='boss';
+  document.getElementById('room-title').textContent = isBoss ? '👑 BOSS ENCOUNTER' : '⚔ COMBAT';
+  const badge = document.getElementById('room-badge');
+  badge.textContent = isBoss ? 'BOSS' : 'HOSTILE';
+  badge.style.borderColor = 'var(--red)';
+  badge.style.color = 'var(--red)';
+
+  renderCombatArena();
+  renderActionBar();
+  addLog(`--- ${enemy.name} appears! ---`, 'system');
+  if(enemy.isGhost) addLog('👻 GHOST SCHEMA detected! Use QUERY to reveal it first.', 'warn');
+  if(enemy.isBoss) addLog('⚠️ BOSS ENCOUNTER! The dungeon trembles.', 'warn');
+}
+
+function renderCombatArena() {
+  const e = G.enemy;
+  if(!e) return;
+  const arena = document.getElementById('combat-arena');
+  const hpPct = Math.max(0,(e.hp/e.maxHp)*100);
+  const ghostClass = e.isGhost && !e.revealed ? 'ghost' : '';
+
+  arena.innerHTML = `
+    <div class="enemy-display fade-in">
+      <div class="enemy-sprite ${ghostClass}" id="enemy-sprite">${e.icon}</div>
+      <div class="enemy-name">${e.isGhost && !e.revealed ? '??? UNKNOWN ENTITY ???' : e.name}</div>
+      <div class="enemy-flavor">${e.isGhost && !e.revealed ? '"Something lurks in the schema..."' : e.flavor}</div>
+      ${e.minions && e.minionActive ? `<div style="font-size:0.7rem;color:var(--red);margin-top:0.3rem;">🕸️ Shadow App Minion: HP ${e.minionHp}</div>` : ''}
+      <div class="enemy-hp-bar">
+        <div class="enemy-hp-label">${e.isGhost && !e.revealed ? '??? / ???' : `HP: ${e.hp} / ${e.maxHp}`}</div>
+        <div class="enemy-hp-bg"><div class="enemy-hp-fill" id="enemy-hp-fill" style="width:${hpPct}%"></div></div>
+      </div>
+      <div class="status-bar" id="enemy-status"></div>
+    </div>`;
+  renderAbilities();
+}
+
+function playerAttack() {
+  if(!G.combatActive || !G.enemy) return;
+  G.turnCount++;
+
+  // Ghost penalty
+  if(G.enemy.isGhost && !G.enemy.revealed) {
+    const miss = Math.random() < 0.6;
+    if(miss) {
+      addLog(`⚔ You swing at ${G.enemy.name}... but hit nothing. QUERY it first!`, 'warn');
+      showDmgFloat('MISS!', false, true);
+      enemyTurn();
+      return;
+    }
+  }
+
+  let dmg = G.attack + Math.floor(Math.random()*8) - 3;
+  dmg = Math.max(1, dmg);
+
+  // Check turbo
+  if(hasStatus('turbo')) dmg = Math.floor(dmg*1.5);
+  // Check weakened
+  const weakened = G.enemy.weakened;
+  if(weakened) dmg = Math.floor(dmg*1.5);
+
+  G.enemy.hp -= dmg;
+  showDmgFloat(dmg, false);
+  addLog(`⚔ You attack ${G.enemy.name} for ${dmg} damage!`, 'player');
+
+  // Hit minion if active
+  if(G.enemy.minionActive && Math.random()<0.3) {
+    G.enemy.minionHp -= Math.floor(dmg/2);
+    if(G.enemy.minionHp<=0) {
+      G.enemy.minionActive = false;
+      addLog('💥 Shadow App Minion destroyed!', 'system');
+    }
+  }
+
+  updateEnemyHP();
+  if(!checkEnemyDead()) enemyTurn();
+}
+
+function enemyTurn() {
+  if(!G.enemy || !G.combatActive) return;
+
+  // Stunned check
+  if(hasStatus('stunned')) {
+    removeStatus('stunned');
+    addLog(`${G.enemy.name} is STUNNED and cannot attack!`, 'system');
+    tickCooldowns();
+    tickStatuses();
+    renderStats();
+    renderActionBar();
+    return;
+  }
+
+  // Special ability check (every 3 turns or 30% chance)
+  const useSpecial = G.turnCount%3===0 || Math.random()<0.25;
+
+  let dmg = G.enemy.attack + Math.floor(Math.random()*8) - 3;
+
+  // Shielded mitigation
+  if(hasStatus('shielded')) dmg = Math.floor(dmg*0.5);
+
+  // Skip turn ability (ninja vanish)
+  if(hasStatus('vanished')) {
+    removeStatus('vanished');
+    addLog(`💨 ${G.enemy.name} attacks but you VANISH! Miss!`, 'system');
+    tickCooldowns(); tickStatuses(); renderStats(); renderActionBar();
+    return;
+  }
+
+  if(useSpecial) {
+    enemySpecial();
+  } else {
+    // Minion bonus
+    if(G.enemy.minionActive) dmg += 8;
+    G.hp -= dmg;
+    showDmgFloat(dmg, true);
+    addLog(`💀 ${G.enemy.name} attacks you for ${dmg} damage!`, 'enemy');
+  }
+
+  tickCooldowns();
+  tickStatuses();
+  renderStats();
+  renderActionBar();
+
+  if(G.hp<=0) gameOver();
+}
+
+function enemySpecial() {
+  const e = G.enemy;
+  addLog(`⚠️ ${e.name} uses ${e.specialName}!`, 'warn');
+
+  if(e.class==='zombie') {
+    // VLOOKUP strike — reduce lineage
+    G.lineage = Math.max(1, G.lineage-2);
+    G.attack = Math.max(1, G.attack-2);
+    const dmg = e.attack + 5;
+    G.hp -= dmg;
+    showDmgFloat(dmg, true);
+    addLog(`📉 LINEAGE reduced by 2! -${dmg} HP`, 'enemy');
+  } else if(e.class==='ghost') {
+    // Haunt — reduces lineage, can't be dodged
+    G.lineage = Math.max(1, G.lineage-3);
+    G.attack = Math.max(1, G.attack-3);
+    addLog(`👻 LINEAGE drained by 3! You feel disconnected from the data.`, 'enemy');
+  } else if(e.class==='spider') {
+    if(!e.minionActive) {
+      e.minionActive = true; e.minionHp = 30;
+      addLog('🕸️ Shadow App Minion spawned! It looks like an unauthorized Tableau server.', 'enemy');
+    } else {
+      const dmg = e.attack + 10;
+      G.hp -= dmg;
+      showDmgFloat(dmg, true);
+      addLog(`🕸️ Minion attacks! -${dmg} HP`, 'enemy');
+    }
+  } else if(e.class==='analyst') {
+    const stolen = Math.min(G.budget, 50 + Math.floor(Math.random()*30));
+    G.budget -= stolen;
+    addLog(`🧾 EXPENSE REPORT FILED — you lose ${stolen} Budget!`, 'enemy');
+  } else if(e.class==='boss') {
+    const dmg = e.attack + 15;
+    G.hp -= dmg;
+    showDmgFloat(dmg+' !!!', true);
+    addLog(`🌊 SCHEMA FLOOD — ${dmg} damage! Your integrity crumbles!`, 'enemy');
+  }
+
+  renderStats();
+  if(G.hp<=0) gameOver();
+}
+
+function queryEnemy() {
+  if(!G.enemy || !G.combatActive) return;
+  G.enemy.revealed = true;
+  const sprite = document.getElementById('enemy-sprite');
+  if(sprite) { sprite.classList.remove('ghost'); sprite.classList.add('revealed'); }
+  addLog(`🔍 QUERY EXECUTED — ${G.enemy.name} revealed! Ghost penalty removed.`, 'system');
+  renderCombatArena();
+  renderActionBar();
+}
+
+function flee() {
+  G.hp = Math.max(1, G.hp-15);
+  G.combatActive = false;
+  G.enemy = null;
+  addLog('💨 You flee! -15 HP. The monster watches you go, disappointed.', 'warn');
+  renderStats();
+  renderActionBar();
+  renderMap();
+}
+
+function checkEnemyDead() {
+  if(!G.enemy || G.enemy.hp>0) return false;
+  G.combatActive = false;
+  G.kills++;
+  G.budget += G.enemy.budget;
+  const xpGained = G.enemy.xp;
+  addLog(`✓ ${G.enemy.name} DEFEATED! +${G.enemy.budget} Budget, +${xpGained} XP`, 'player');
+
+  // Quest check
+  checkQuest('kills3', G.kills>=3);
+
+  const room = G.rooms[G.currentRoom];
+  room.cleared = true;
+  G.rooms[G.currentRoom].enemy = null;
+
+  const wasBoss = G.enemy.isBoss;
+  G.enemy = null;
+  gainXP(xpGained);
+  renderStats();
+  renderMap();
+
+  if(wasBoss) {
+    checkQuest('boss1', true);
+    if(G.floor<5) {
+      setTimeout(()=>showStairsDown(), 800);
+    } else {
+      setTimeout(()=>gameWin(), 800);
+    }
+  } else {
+    // Show loot choice
+    setTimeout(()=>showPostCombatLoot(), 500);
+  }
+  return true;
+}
+
+function showPostCombatLoot() {
+  const loot1 = LOOT_POOL[Math.floor(Math.random()*LOOT_POOL.length)];
+  const loot2 = LOOT_POOL[Math.floor(Math.random()*LOOT_POOL.length)];
+  const arena = document.getElementById('combat-arena');
+  const bar = document.getElementById('action-bar');
+
+  arena.innerHTML = `
+    <div class="event-panel fade-in">
+      <div class="event-title">⚔ ENEMY DEFEATED</div>
+      <div class="event-desc">The monster drops two items. You can only carry one (or skip).</div>
+      <div class="loot-grid">
+        <div class="loot-card item-rarity-${loot1.rarity}" onclick="pickLoot(0)">
+          <div class="loot-icon">${loot1.icon}</div>
+          <div class="loot-name">${loot1.name}</div>
+          <div class="loot-desc">${loot1.desc}</div>
+          <div style="font-size:0.6rem;color:var(--${loot1.rarity==='legendary'?'gold':loot1.rarity==='epic'?'purple':loot1.rarity==='rare'?'glow':'dim'})">${loot1.rarity.toUpperCase()}</div>
+        </div>
+        <div class="loot-card item-rarity-${loot2.rarity}" onclick="pickLoot(1)">
+          <div class="loot-icon">${loot2.icon}</div>
+          <div class="loot-name">${loot2.name}</div>
+          <div class="loot-desc">${loot2.desc}</div>
+          <div style="font-size:0.6rem;color:var(--${loot2.rarity==='legendary'?'gold':loot2.rarity==='epic'?'purple':loot2.rarity==='rare'?'glow':'dim'})">${loot2.rarity.toUpperCase()}</div>
+        </div>
+      </div>
+    </div>`;
+
+  window._lootOptions = [loot1, loot2];
+
+  bar.innerHTML = '';
+  const skipBtn = document.createElement('button');
+  skipBtn.className = 'btn';
+  skipBtn.textContent = 'SKIP LOOT';
+  skipBtn.onclick = ()=>{ arena.innerHTML='<div style="color:var(--dim);padding:2rem;text-align:center;font-size:0.8rem;">Room cleared. Move on.</div>'; bar.innerHTML=''; };
+  bar.appendChild(skipBtn);
+}
+
+function pickLoot(idx) {
+  const item = window._lootOptions[idx];
+  if(G.inventory.length<G.maxInv) {
+    G.inventory.push(item);
+    item.effect();
+    addLog(`🎒 Picked up: ${item.name}`, 'item');
+    showNotif(`+${item.name}`);
+  } else {
+    addLog('Inventory full! Item lost.', 'warn');
+  }
+  renderInventory();
+  renderStats();
+  const arena = document.getElementById('combat-arena');
+  arena.innerHTML='<div style="color:var(--dim);padding:2rem;text-align:center;font-size:0.8rem;">Room cleared. Move on, Steward.</div>';
+  document.getElementById('action-bar').innerHTML='';
+}
+
+// ── Loot Room ──
+function showLootRoom(room) {
+  if(!room.loot) {
+    room.loot = LOOT_POOL[Math.floor(Math.random()*LOOT_POOL.length)];
+  }
+  const item = room.loot;
+  document.getElementById('room-title').textContent = '💰 LOOT ROOM';
+  const badge = document.getElementById('room-badge');
+  badge.textContent = 'REWARD'; badge.style.borderColor='var(--gold)'; badge.style.color='var(--gold)';
+
+  const arena = document.getElementById('combat-arena');
+  arena.innerHTML = `
+    <div class="event-panel fade-in">
+      <div class="event-title">💰 LOOT DISCOVERED</div>
+      <div class="event-desc">Tucked behind a server rack, you find something valuable.</div>
+      <div class="loot-grid" style="grid-template-columns:1fr;">
+        <div class="loot-card item-rarity-${item.rarity}" onclick="pickLoot(0)" style="max-width:200px;">
+          <div class="loot-icon" style="font-size:2.5rem;">${item.icon}</div>
+          <div class="loot-name">${item.name}</div>
+          <div class="loot-desc">${item.desc}</div>
+        </div>
+      </div>
+    </div>`;
+  window._lootOptions = [item];
+
+  const bar = document.getElementById('action-bar');
+  bar.innerHTML = '';
+  const skipBtn = document.createElement('button');
+  skipBtn.className='btn'; skipBtn.textContent='LEAVE IT';
+  skipBtn.onclick=()=>{ room.cleared=true; renderMap(); arena.innerHTML='<div style="color:var(--dim);padding:2rem;text-align:center;">Left the loot. Very stoic of you.</div>'; bar.innerHTML=''; };
+  bar.appendChild(skipBtn);
+}
+
+// ── Shop ──
+function showShop(room) {
+  document.getElementById('room-title').textContent = '🏪 DATA SHOP';
+  const badge = document.getElementById('room-badge');
+  badge.textContent='SHOP'; badge.style.borderColor='var(--gold)'; badge.style.color='var(--gold)';
+  checkQuest('shop', true);
+
+  const arena = document.getElementById('combat-arena');
+  const items = room.shopItems;
+
+  arena.innerHTML = `
+    <div class="event-panel fade-in" style="width:100%;">
+      <div class="event-title">🏪 THE DATA SHOP</div>
+      <div class="event-desc">"We accept budget transfers only. Cash is a compliance risk." — Shopkeeper</div>
+      <div class="shop-grid">
+        ${items.map((item,i)=>`
+          <div class="shop-item" onclick="buyShopItem(${i})">
+            <span style="font-size:1.5rem">${item.icon}</span>
+            <div style="flex:1">
+              <div style="font-size:0.72rem;color:var(--text)">${item.name}</div>
+              <div style="font-size:0.62rem;color:var(--dim)">${item.desc}</div>
+              <div style="font-size:0.6rem;color:var(--${item.rarity==='legendary'?'gold':item.rarity==='epic'?'purple':item.rarity==='rare'?'glow':'dim'})">${item.rarity.toUpperCase()}</div>
+            </div>
+            <div class="shop-price">💰${item.cost}</div>
+          </div>`).join('')}
+      </div>
+    </div>`;
+  window._shopRoom = room;
+
+  const bar = document.getElementById('action-bar');
+  bar.innerHTML='';
+  const leaveBtn = document.createElement('button');
+  leaveBtn.className='btn'; leaveBtn.textContent='LEAVE SHOP';
+  leaveBtn.onclick=()=>{ arena.innerHTML='<div style="color:var(--dim);padding:2rem;text-align:center;">Shop visited. Come back anytime.</div>'; bar.innerHTML=''; };
+  bar.appendChild(leaveBtn);
+}
+
+function buyShopItem(idx) {
+  const room = window._shopRoom;
+  const item = room.shopItems[idx];
+  if(G.budget < item.cost) { addLog('❌ Not enough Budget!','warn'); showNotif('Not enough budget!'); return; }
+  G.budget -= item.cost;
+  item.effect();
+  if(G.inventory.length<G.maxInv) G.inventory.push(item);
+  room.shopItems.splice(idx,1);
+  addLog(`🏪 Purchased: ${item.name}`, 'item');
+  showNotif(`Bought: ${item.name}`);
+  renderInventory(); renderStats();
+  showShop(room); // re-render shop
+}
+
+// ── Events ──
+function showEvent(room) {
+  const event = room.event;
+  document.getElementById('room-title').textContent = '📋 RANDOM EVENT';
+  const badge = document.getElementById('room-badge');
+  badge.textContent='EVENT'; badge.style.borderColor='var(--glow)'; badge.style.color='var(--glow)';
+
+  const arena = document.getElementById('combat-arena');
+  arena.innerHTML = `
+    <div class="event-panel fade-in">
+      <div class="event-title">${event.title}</div>
+      <div class="event-desc">${event.desc}</div>
+      <div class="event-choices" id="event-choices">
+        ${event.choices.map((c,i)=>`<button class="btn btn-gold" onclick="resolveEvent(${i})">${c.text}</button>`).join('')}
+      </div>
+    </div>`;
+  window._currentEvent = event;
+  document.getElementById('action-bar').innerHTML = '';
+}
+
+function resolveEvent(idx) {
+  const choice = window._currentEvent.choices[idx];
+  choice.action();
+  renderStats();
+  renderInventory();
+  G.rooms[G.currentRoom].cleared = true;
+  renderMap();
+  document.getElementById('event-choices').innerHTML='<div style="color:var(--glow);font-size:0.8rem;margin-top:1rem;">Resolved. Move on.</div>';
+}
+
+// ── Stairs Down ──
+function showStairsDown() {
+  const arena = document.getElementById('combat-arena');
+  const bar = document.getElementById('action-bar');
+  arena.innerHTML = `
+    <div class="event-panel fade-in">
+      <div class="event-title">🚪 FLOOR CLEARED!</div>
+      <div class="event-desc">The boss is defeated. A service elevator descends into the next floor.<br>
+      <span style="color:var(--dim);font-size:0.7rem;">"Floor ${G.floor} audit complete. ${G.kills} incidents resolved."</span></div>
+    </div>`;
+  bar.innerHTML='';
+  const btn = document.createElement('button');
+  btn.className='btn btn-green'; btn.textContent=`▼ DESCEND TO FLOOR B${G.floor+1}`;
+  btn.onclick=descend;
+  bar.appendChild(btn);
+}
+
+function descend() {
+  G.floor++;
+  G.hp = Math.min(G.maxHp, G.hp + 30); // heal a bit
+  G.statuses = [];
+  G.cooldowns = {};
+  addLog(`🔻 Descending to Floor B${G.floor}...`, 'system');
+  addLog(`💊 Integrity partially restored (+30 HP)`, 'system');
+  generateFloor();
+  renderStats();
+  renderInventory();
+  renderAbilities();
+  // Update quests for new floor
+  G.quests = [
+    { id:`kills_f${G.floor}`, text:`Defeat 2 monsters on Floor B${G.floor}`, done:false },
+    { id:`boss_f${G.floor}`, text:`Defeat the Floor B${G.floor} Boss`, done:false },
+    { id:'budget5', text:'Accumulate 300 Budget', done:G.budget>=300 },
+  ];
+  renderQuests();
+}
+
+// ══════════════════════════════════
+//  ABILITIES
+// ══════════════════════════════════
+
+function useAbility(id) {
+  if(!G.combatActive) return;
+  if(G.cooldowns[id]>0) { addLog('Ability on cooldown!','warn'); return; }
+  ABILITIES[id].fn();
+  G.cooldowns[id] = ABILITIES[id].cooldown;
+  renderAbilities();
+  renderStats();
+  if(G.enemy && G.enemy.hp>0) enemyTurn();
+}
+
+function executiveMemo() {
+  const dmg = G.attack*2 + Math.floor(Math.random()*10);
+  G.enemy.hp -= dmg;
+  showDmgFloat(dmg+' !!', false);
+  addLog(`📧 EXECUTIVE MEMO — ${dmg} damage! "Per my last email..."`, 'player');
+  updateEnemyHP(); checkEnemyDead();
+}
+function budgetFreeze() {
+  addStatus('stunned','🧊 STUNNED',1);
+  addLog('🧊 BUDGET FREEZE! Enemy stunned next turn.','player');
+}
+function restructure() {
+  const heal = 30; G.hp = Math.min(G.maxHp, G.hp+heal);
+  addLog(`♻️ RESTRUCTURE — You restore ${heal} Integrity. "We\'re excited about this new direction."`, 'player');
+}
+function piiMask() {
+  addStatus('vanished','💨 MASKED',1);
+  addLog('🎭 PII MASK — You are temporarily undetectable. Next attack will miss.','player');
+}
+function doubleEncrypt() {
+  const dmg = Math.floor(G.attack*1.5);
+  G.enemy.hp -= dmg;
+  showDmgFloat(dmg, false);
+  addStatus('shielded','🔒 ENCRYPTED',2);
+  addLog(`🔒 DOUBLE ENCRYPT — ${dmg} damage + 2-turn shield!`, 'player');
+  updateEnemyHP(); checkEnemyDead();
+}
+function vanish() {
+  addStatus('vanished','💨 VANISHED',2);
+  addLog('💨 VANISH — You phase into the metadata. Enemy skips 2 turns.','player');
+}
+function selectStar() {
+  if(G.enemy.isGhost) { G.enemy.revealed=true; renderCombatArena(); }
+  const dmg = G.attack + 15;
+  G.enemy.hp -= dmg;
+  showDmgFloat(dmg, false);
+  addLog(`✨ SELECT * — All fields revealed! ${dmg} damage.`,'player');
+  updateEnemyHP(); checkEnemyDead();
+}
+function explainPlan() {
+  G.enemy.weakened = true;
+  addLog('📋 EXPLAIN PLAN — Enemy defense halved! Query costs revealed.','player');
+}
+function dropTable() {
+  const roll = Math.random();
+  if(roll<0.2) {
+    // Backfire
+    const dmg = 20; G.hp -= dmg;
+    addLog(`💥 DROP TABLE — CRITICAL ERROR! It dropped YOUR table. -${dmg} HP`, 'enemy');
+    showDmgFloat(dmg+'(SELF)', true);
+  } else {
+    const dmg = G.attack*3 + 20;
+    G.enemy.hp -= dmg;
+    showDmgFloat(dmg+' !!!', false);
+    addLog(`💥 DROP TABLE — ${dmg} DAMAGE! "Are you sure? This cannot be undone."`, 'player');
+    updateEnemyHP(); checkEnemyDead();
+  }
+}
+
+// ══════════════════════════════════
+//  UTILITIES
+// ══════════════════════════════════
+
+function addLog(msg, type='system') {
+  const log = document.getElementById('combat-log');
+  const div = document.createElement('div');
+  div.className = `log-entry log-${type}`;
+  div.textContent = msg;
+  log.appendChild(div);
+  log.scrollTop = log.scrollHeight;
+}
+
+function addStatus(type, label, turns) {
+  G.statuses = G.statuses.filter(s=>s.type!==type);
+  G.statuses.push({type, label, turns, good:true});
+}
+function hasStatus(type) { return G.statuses.some(s=>s.type===type); }
+function removeStatus(type) { G.statuses = G.statuses.filter(s=>s.type!==type); }
+function tickStatuses() {
+  G.statuses = G.statuses.map(s=>({...s, turns:s.turns-1})).filter(s=>s.turns>0);
+}
+function tickCooldowns() {
+  for(const k in G.cooldowns) { if(G.cooldowns[k]>0) G.cooldowns[k]--; }
+}
+
+function gainXP(amount) {
+  G.xp += amount;
+  while(G.xp>=G.xpMax) {
+    G.xp -= G.xpMax;
+    G.level++;
+    G.xpMax = Math.floor(G.xpMax*1.4);
+    G.maxHp += 20; G.hp = Math.min(G.maxHp, G.hp+20);
+    G.attack += 2; G.lineage += 1;
+    addLog(`⭐ LEVEL UP! Now Level ${G.level}. +20 Max Integrity, +2 Attack!`, 'system');
+    showNotif(`LEVEL UP! → LVL ${G.level}`);
+    const flash = document.createElement('div');
+    flash.className = 'level-flash';
+    document.body.appendChild(flash);
+    setTimeout(()=>flash.remove(), 800);
+  }
+}
+
+function updateEnemyHP() {
+  if(!G.enemy) return;
+  const fill = document.getElementById('enemy-hp-fill');
+  const pct = Math.max(0,(G.enemy.hp/G.enemy.maxHp)*100);
+  if(fill) fill.style.width = pct+'%';
+  // shake sprite
+  const sprite = document.getElementById('enemy-sprite');
+  if(sprite) { sprite.classList.add('shake'); setTimeout(()=>sprite.classList.remove('shake'),400); }
+}
+
+function showDmgFloat(dmg, isPlayerDmg, isMiss=false) {
+  const arena = document.getElementById('combat-arena');
+  const el = document.createElement('div');
+  el.className = `damage-floater ${isMiss?'dmg-miss':isPlayerDmg?'dmg-player':'dmg-enemy'}`;
+  el.textContent = isMiss ? 'MISS' : (isPlayerDmg?'-':'+') + dmg;
+  el.style.left = (30+Math.random()*40)+'%';
+  el.style.top = (20+Math.random()*30)+'%';
+  arena.appendChild(el);
+  setTimeout(()=>el.remove(), 1000);
+}
+
+function showNotif(msg) {
+  const n = document.createElement('div');
+  n.className='notif'; n.textContent=msg;
+  document.body.appendChild(n);
+  setTimeout(()=>n.remove(), 2800);
+}
+
+function checkQuest(id, condition) {
+  const q = G.quests.find(q=>q.id===id);
+  if(q && !q.done && condition) {
+    q.done = true;
+    addLog(`✅ QUEST COMPLETE: ${q.text}`, 'system');
+    showNotif(`Quest Complete: ${q.text}`);
+    gainXP(75); G.budget+=50;
+  }
+  renderQuests();
+}
+
+function renderQuests() {
+  const el = document.getElementById('quest-log');
+  el.innerHTML = G.quests.map(q=>`<div style="color:${q.done?'var(--green)':'var(--dim)'}">${q.done?'✅':'○'} ${q.text}</div>`).join('');
+}
+
+function gameOver() {
+  G.combatActive = false;
+  const overlay = document.getElementById('overlay');
+  const box = document.getElementById('overlay-box');
+  box.innerHTML = `
+    <div class="overlay-title death-title">💀 INTEGRITY LOST</div>
+    <div style="font-size:3rem;margin:1rem 0;">☠️</div>
+    <div class="overlay-desc">
+      Your data steward has been <span style="color:var(--red)">"restructured."</span><br>
+      The audit found nothing. The data lake grows.<br><br>
+      <span style="color:var(--dim)">Floor reached: B${G.floor} | Kills: ${G.kills} | Budget: ${G.budget}</span>
+    </div>
+    <div style="display:flex;gap:1rem;justify-content:center;flex-wrap:wrap;">
+      <button class="btn btn-red" onclick="restartGame()">↺ NEW RUN</button>
+    </div>`;
+  overlay.classList.remove('hidden');
+}
+
+function gameWin() {
+  G.combatActive = false;
+  const overlay = document.getElementById('overlay');
+  const box = document.getElementById('overlay-box');
+  box.innerHTML = `
+    <div class="overlay-title win-title">🏆 DATA GOVERNED!</div>
+    <div style="font-size:3rem;margin:1rem 0;">🎉</div>
+    <div class="overlay-desc">
+      The Ungoverned Data Lake has been <span style="color:var(--gold)">catalogued, tagged, and certified.</span><br>
+      The dungeon is silent. The schemas are owned. The PII is masked.<br><br>
+      <span style="color:var(--dim)">Level: ${G.level} | Kills: ${G.kills} | Budget remaining: ${G.budget}</span><br>
+      <span style="color:var(--gold)">COMPLIANCE SCORE: ${Math.floor((G.kills*10+G.level*50+G.budget/10))}</span>
+    </div>
+    <button class="btn btn-gold" onclick="restartGame()">↺ PLAY AGAIN</button>`;
+  overlay.classList.remove('hidden');
+}
+
+function restartGame() {
+  document.getElementById('overlay').classList.add('hidden');
+  document.getElementById('game-screen').style.display='none';
+  document.getElementById('title-screen').style.display='flex';
+  document.querySelectorAll('.class-card').forEach(c=>c.classList.remove('selected'));
+  document.getElementById('start-btn').disabled=true;
+  G={};
+}
+
+// ══════════════════════════════════
+//  TITLE SCREEN LOGIC
+// ══════════════════════════════════
+
+let selectedClass = null;
+function selectClass(cls) {
+  selectedClass = cls;
+  document.querySelectorAll('.class-card').forEach(c=>c.classList.remove('selected'));
+  document.getElementById('card-'+cls).classList.add('selected');
+  document.getElementById('start-btn').disabled=false;
+}
+
+function startGame() {
+  if(!selectedClass) return;
+  document.getElementById('title-screen').style.display='none';
+  const gs = document.getElementById('game-screen');
+  gs.style.display='flex';
+
+  initState(selectedClass);
+
+  // Set character info
+  const names = {cdo:'MAXWELL DATAFORD III',ninja:'SHADOW QUERY',wizard:'GANDALF.SQL'};
+  const classLabels = {cdo:'Chief Data Officer',ninja:'Privacy Ninja',wizard:'SQL Wizard'};
+  document.getElementById('char-name').textContent = names[selectedClass];
+  document.getElementById('char-class').textContent = `CLASS: ${classLabels[selectedClass]}`;
+
+  renderStats();
+  renderInventory();
+  renderAbilities();
+  renderQuests();
+}
+
+// Keyboard shortcuts
+document.addEventListener('keydown', e=>{
+  if(!G.combatActive) return;
+  if(e.key==='a'||e.key==='A') playerAttack();
+  if(e.key==='q'||e.key==='Q') { if(G.enemy&&G.enemy.isGhost&&!G.enemy.revealed) queryEnemy(); }
+  if(e.key==='f'||e.key==='F') flee();
+  if(e.key==='1') useAbility(G.abilities[0]);
+  if(e.key==='2') useAbility(G.abilities[1]);
+  if(e.key==='3') useAbility(G.abilities[2]);
+});
+</script>
+</body>
+</html>
