@@ -1,1 +1,1 @@
-# tribal-technology
+# tribal-technology.com
